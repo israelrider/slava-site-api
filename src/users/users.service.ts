@@ -1,11 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  HttpException,
-  HttpStatus,
-  Inject,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
+
 import { AccountsUsers } from './interfaces/accounts-users.interface';
 import { Users } from './models/users.model';
 import { UserDto } from './dto/user.dto';
@@ -71,10 +66,7 @@ export class UsersService {
     }
   }
 
-  public async updateByPassword(
-    email: string,
-    password: string,
-  ): Promise<Users> {
+  public async updateByPassword(email: string, password: string): Promise<Users> {
     try {
       return await this.usersRepository.updateByPassword(email, password);
     } catch (err) {
@@ -82,10 +74,7 @@ export class UsersService {
     }
   }
 
-  public async updateUserProfile(
-    id: string,
-    userProfileDto: UserProfileDto,
-  ): Promise<Users> {
+  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<Users> {
     try {
       return await this.usersRepository.updateUserProfile(id, userProfileDto);
     } catch (err) {
@@ -93,10 +82,7 @@ export class UsersService {
     }
   }
 
-  public async updateUser(
-    id: string,
-    userUpdateDto: UserUpdateDto,
-  ): Promise<UpdateResult> {
+  public async updateUser(id: string, userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
     try {
       return await this.usersRepository.updateUser(id, userUpdateDto);
     } catch (err) {

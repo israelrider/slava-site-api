@@ -9,7 +9,7 @@ export class MailerService {
   constructor() {
     this.nodemailerTransport = createTransport({
       host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT, 10) : 587, // default 587
+      port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT, 10) : 465,
       auth: {
         user: process.env.EMAIL_AUTH_USER,
         pass: process.env.EMAIL_AUTH_PASSWORD,

@@ -1,19 +1,16 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
 import { UsersService } from '../../users/users.service';
 import { AccountsUsers } from '../../users/interfaces/accounts-users.interface';
-import { LoginDto } from './dto/login.dto';
 import { HashingService } from '../../common/hashing/hashing.service';
-import { JWTPayload } from './interfaces/jwt-payload.interface';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Users } from '../../users/models/users.model';
+
 import { jwtConfig } from './config/jwt.config';
 import { AuthResponse } from './interfaces/auth-response.interface';
+import { LoginDto } from './dto/login.dto';
+import { JWTPayload } from './interfaces/jwt-payload.interface';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class LoginService {
@@ -34,15 +31,9 @@ export class LoginService {
         throw new UnauthorizedException('User does not exists');
       }
 
-      const passwordIsValid = await this.hashingService.compare(
-        loginDto.password,
-        user.password,
-      );
-
+      const passwordIsValid = await this.hashingService.compare(loginDto.password, user.password);
       if (!passwordIsValid) {
-        throw new UnauthorizedException(
-          'Authentication failed. Wrong password',
-        );
+        throw new UnauthorizedException('Authentication failed. Wrong password');
       }
 
       return await this.generateTokens(user);
@@ -52,14 +43,12 @@ export class LoginService {
   }
 
   public async generateTokens(user: Users): Promise<AuthResponse> {
+    // prettier-ignore
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken<Partial<JWTPayload>>(
-        user.id,
-        jwtConfig.accessTokenTtl ?? 3600,
-        { email: user.email },
-      ),
-      this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400),
+      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { email: user.email }),
+      this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400)
     ]);
+
     return {
       accessToken,
       refreshToken,
@@ -71,12 +60,11 @@ export class LoginService {
     };
   }
 
-  public async refreshTokens(
-    refreshTokenDto: RefreshTokenDto,
-  ): Promise<AuthResponse> {
+  public async refreshTokens(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
     try {
       const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(
         refreshTokenDto.refreshToken,
+        // prettier-ignore
         {
           secret: jwtConfig.secret,
           audience: jwtConfig.audience,
@@ -84,26 +72,23 @@ export class LoginService {
         },
       );
       const user = await this.usersService.findBySub(id);
+
       return this.generateTokens(user);
     } catch (err) {
       throw new UnauthorizedException(err);
     }
   }
 
-  private async signToken<T>(
-    userId: number,
-    expiresIn: number,
-    payload?: T,
-  ): Promise<string> {
+  private async signToken<T>(userId: number, expiresIn: number, payload?: T): Promise<string> {
     return await this.jwtService.signAsync(
       {
-        sub: userId,
+        id: userId,
         ...payload,
       },
       {
+        secret: jwtConfig.secret,
         audience: jwtConfig.audience,
         issuer: jwtConfig.issuer,
-        secret: jwtConfig.secret,
         expiresIn,
       },
     );

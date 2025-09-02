@@ -1,18 +1,12 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+https://github.com/Tony133/nestjs-api-boilerplate-jwt
 
-# NestJSApiBoilerplateJWT
-
-An API Boilerplate to create a ready-to-use REST API in seconds with NestJS 11.x and JWT Auth System :heart_eyes_cat:
-
-## Installation
+### An API Boilerplate to create a ready-to-use REST API with NestJS 11.x and JWT Auth System :heart_eyes_cat:
 
 ```bash
    pnpm install
 ```
 
-## Set Environment for secret key JWT and other configurations
+### Set Environment for secret key JWT and other configurations
 
 ```bash
    cp .env.example .env
@@ -24,7 +18,9 @@ To set up on multiple environments, such as development, staging or production, 
    cp .env.example .env.development # or .env.staging, etc
 ```
 
-## Config settings .env for sending a notification when a user registers, forgets password or changes password
+### Config settings .env for sending a notification when a user registers, forgets password or changes password
+
+https://chatgpt.com/share/68b6e38c-bf9c-8008-a1df-75caf3f07a39
 
 ```
    EMAIL_HOST=smtp.mailtrap.io
@@ -35,7 +31,7 @@ To set up on multiple environments, such as development, staging or production, 
    EMAIL_LOGGER=true
 ```
 
-## Config settings .env to connect MySQL
+### Config settings .env to connect MySQL
 
 Once the database has been configured, start the Nest App via `pnpm run start:dev` it automatically synchronizes the entities so it is ready to use.
 
@@ -55,7 +51,7 @@ Once the database has been configured, start the Nest App via `pnpm run start:de
    TYPEORM_SUBSCRIBERS_DIR = "src/subscriber"
 ```
 
-## Install TypeScript Node
+### Install TypeScript Node
 
 ```bash
    pnpm install -g ts-node
@@ -73,11 +69,11 @@ or
    node_modules/.bin/typeorm migration:run -d dist/typeorm-cli.config
 ```
 
-## Running the app
+### Running the app
 
 ```bash
     # development
-    $ pnpm start
+    $ pnpm dev
 
     # watch mode
     $ pnpm start:dev
@@ -86,7 +82,7 @@ or
     $ pnpm start:prod
 ```
 
-## Running the app in REPL mode
+### Running the app in REPL mode
 
 ```bash
    pnpm start --entryFile repl
@@ -98,7 +94,7 @@ or
    pnpm start:repl
 ```
 
-## Docker
+### Docker
 
 There is a `docker-compose.yml` file for starting MySQL with Docker.
 
@@ -108,28 +104,22 @@ After running, you can stop the Docker container with
 
 `$ docker-compose down`
 
-## Url Swagger for Api Documentation
+### Url Swagger for Api Documentation
 
 ```
-
 http://127.0.0.1:3000/docs
-
 ```
 
 or
 
 ```
-
 http://127.0.0.1:3000/docs-json
-
 ```
 
 or
 
 ```
-
 http://127.0.0.1:3000/docs-yaml
-
 ```
 
 Configure `SWAGGER_USER` and `SWAGGER_PASSWORD` in the .env file for to access the Swagger(Open API) documentation with basic authentication. `NODE_ENV`
@@ -139,87 +129,82 @@ must not be equal to "production" otherwise the Swagger is not displayed.
 NODE_ENV=[:enviroments]
 SWAGGER_USER=[:user]
 SWAGGER_PASSWORD=[:password]
-
 ```
 
-## Configuring the SERVER_PORT environment variable as the default port if you don't want to use the default
+### Configuring the SERVER_PORT environment variable as the default port if you don't want to use the default
 
 ```
    SERVER_PORT=3333
 ```
 
-## Configuring the ENDPOINT_URL_CORS environment variable for app frontend
+### Configuring the ENDPOINT_URL_CORS environment variable for app frontend
 
 ```
    ENDPOINT_URL_CORS='http://127.0.0.1:4200'
 ```
 
-## Getting secure resource with Curl
+### Getting secure resource with Curl
 
 ```bash
     curl -H 'content-type: application/json' -v -X GET http://127.0.0.1:3000/api/secure  -H 'Authorization: Bearer [:token]'
 ```
 
-## Generate Token JWT Authentication with Curl
+### Generate Token JWT Authentication with Curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X POST -d '{"email": "tony_admin@nest.com", "password": "mysecret"}' http://127.0.0.1:3000/api/auth/login
 ```
 
-## Registration user with Curl
+### Registration user with Curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X POST -d '{"name": "tony", "email": "tony_admin@nest.com", "username":"tony_admin", "password": "mysecret"}' http://127.0.0.1:3000/api/auth/register
 ```
 
-## Refresh token with curl
+### Refresh token with curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X POST -d '{"refreshToken": "[:token]"}' http://127.0.0.1:3000/api/auth/refresh-tokens
 ```
 
-## Forgot password with curl
+### Forgot password with curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X POST -d '{"email": "tony_admin@nest.com"}' http://127.0.0.1:3000/api/auth/forgot-password
 ```
 
-## Change password User with curl
+### Change password User with curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X POST -d '{"email": "tony_admin@nest.com", "password": "new_password"}' http://127.0.0.1:3000/api/auth/change-password  -H 'Authorization: Bearer [:token]'
 ```
 
-## Update profile User with curl
+### Update profile User with curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X PUT -d '{"name": "tony", "email": "tony_admin@nest.com", "username": "tony_admin"}' http://127.0.0.1:3000/api/users/:id/profile  -H 'Authorization: Bearer [:token]'
 ```
 
-## Users list with Curl
+### Users list with Curl
 
 ```bash
    curl -H 'content-type: application/json' -H 'Accept: application/json' -v -X GET http://127.0.0.1:3000/api/users  -H 'Authorization: Bearer [:token]'
 ```
 
-## User by Id with Curl
+### User by Id with Curl
 
 ```bash
    curl -H 'content-type: application/json' -H 'Accept: application/json' -v -X GET http://127.0.0.1:3000/api/users/:id  -H 'Authorization: Bearer [:token]'
 ```
 
-## Update User with Curl
+### Update User with Curl
 
 ```bash
    curl -H 'content-type: application/json' -v -X PUT -d '{"name": "tony", "email": "tony_admin@nest.com", "username": "tony_admin", "password":"password_update"}' http://127.0.0.1:3000/api/users/:id  -H 'Authorization: Bearer [:token]'
 ```
 
-## Delete User by Id with Curl
+### Delete User by Id with Curl
 
 ```bash
    curl -H 'content-type: application/json' -H 'Accept: application/json' -v -X DELETE http://127.0.0.1:3000/api/users/:id  -H 'Authorization: Bearer [:token]'
 ```
-
-## License
-
-[MIT licensed](LICENSE)

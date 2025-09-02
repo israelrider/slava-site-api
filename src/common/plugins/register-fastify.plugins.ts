@@ -1,11 +1,12 @@
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
+import type { FastifyCookieOptions } from '@fastify/cookie';
+
 export async function registerFastifyPlugins(app: NestFastifyApplication) {
   await app.register(require('@fastify/cors'), {
-    origin: true || [process.env.ENDPOINT_URL_CORS],
+    origin: process.env.ENDPOINT_URL_CORS,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders:
-      'Content-Type, Accept, Access-Control-Allow-Origin, Access-Control-Allow-Methods',
+    allowedHeaders: 'Content-Type, Accept, Access-Control-Allow-Origin, Access-Control-Allow-Methods',
     credentials: true,
   });
 
@@ -13,6 +14,8 @@ export async function registerFastifyPlugins(app: NestFastifyApplication) {
     max: 100,
     timeWindow: '1 minute',
   });
+
+  await app.register(require('@fastify/cookie'), {} as FastifyCookieOptions);
 
   await app.register(require('@fastify/helmet'), {
     crossOriginResourcePolicy: true,

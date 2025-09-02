@@ -1,6 +1,8 @@
+import { NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+
 import { Users } from '../../../users/models/users.model';
 import { UsersRepository } from '../users.repository.interface';
-import { Repository, UpdateResult } from 'typeorm';
 import { UserProfileDto } from '../../../users/dto/user-profile.dto';
 import { UserUpdateDto } from '../../../users/dto/user-update.dto';
 import { UserDto } from '../../../users/dto/user.dto';
@@ -23,24 +25,29 @@ export class UsersTypeOrmRepository implements UsersRepository {
     });
   }
 
-  public async findBySub(sub: number): Promise<Users> {
+  public async findBySub(sub: number) {
+    if (!sub && sub !== 0) {
+      throw new NotFoundException('Sub Not Found');
+    }
+
     return await this.usersRepository.findOneByOrFail({
       id: sub,
     });
   }
 
-  public async findById(userId: string): Promise<Users | null> {
+  public async findById(userId: string) {
     return await this.usersRepository.findOneBy({
       id: +userId,
     });
   }
 
-  public async create(userDto: UserDto): Promise<AccountsUsers> {
+  public async create(userDto: UserDto) {
     return await this.usersRepository.save(userDto);
   }
 
-  public async updateByEmail(email: string): Promise<Users> {
+  public async updateByEmail(email: string) {
     const user = await this.usersRepository.findOneBy({ email: email });
+    // prettier-ignore
     user.password = await this.hashingService.hash(
       Math.random().toString(36).slice(-8),
     );
@@ -48,20 +55,14 @@ export class UsersTypeOrmRepository implements UsersRepository {
     return await this.usersRepository.save(user);
   }
 
-  public async updateByPassword(
-    email: string,
-    password: string,
-  ): Promise<Users> {
+  public async updateByPassword(email: string, password: string) {
     const user = await this.usersRepository.findOneBy({ email: email });
     user.password = await this.hashingService.hash(password);
 
     return await this.usersRepository.save(user);
   }
 
-  public async updateUserProfile(
-    id: string,
-    userProfileDto: UserProfileDto,
-  ): Promise<Users> {
+  public async updateUserProfile(id: string, userProfileDto: UserProfileDto) {
     const user = await this.usersRepository.findOneBy({ id: +id });
     user.name = userProfileDto.name;
     user.email = userProfileDto.email;
@@ -70,10 +71,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     return await this.usersRepository.save(user);
   }
 
-  public async updateUser(
-    id: string,
-    userUpdateDto: UserUpdateDto,
-  ): Promise<UpdateResult> {
+  public async updateUser(id: string, userUpdateDto: UserUpdateDto) {
     return await this.usersRepository.update(
       {
         id: +id,
@@ -82,7 +80,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     );
   }
 
-  public async deleteUser(user: any): Promise<void> {
+  public async deleteUser(user: any) {
     await this.usersRepository.remove(user);
   }
 }
