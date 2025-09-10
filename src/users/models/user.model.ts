@@ -7,17 +7,24 @@ export class User {
   })
   id: number;
 
-  @Column()
+  @Column({
+    length: 60,
+  })
   name: string;
-
-  @Column()
-  username: string;
 
   @Column({
     unique: true,
+    length: 255,
   })
   email: string;
 
-  @Column({ length: 255 })
+  @Column({
+    length: 20,
+  })
+  role: string;
+
+  @Column({
+    length: 30,
+  })
   password: string;
 }

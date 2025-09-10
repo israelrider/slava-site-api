@@ -2,20 +2,23 @@ import { MaxLength, IsNotEmpty, IsEmail, IsString } from 'class-validator';
 
 export class UserDto {
   @IsString()
-  @MaxLength(30)
+  @IsNotEmpty()
+  @MaxLength(60)
   readonly name: string;
-
-  @IsString()
-  @MaxLength(40)
-  readonly username: string;
 
   @IsEmail()
   @IsString()
   @IsNotEmpty()
+  @MaxLength(255)
   readonly email: string;
 
-  @IsNotEmpty()
   @IsString()
-  @MaxLength(60)
+  @IsNotEmpty()
+  @MaxLength(20)
+  readonly role: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(30)
   password: string;
 }

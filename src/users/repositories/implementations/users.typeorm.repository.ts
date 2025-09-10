@@ -66,7 +66,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     const user = await this.usersRepository.findOneBy({ id: +id });
     user.name = userProfileDto.name;
     user.email = userProfileDto.email;
-    user.username = userProfileDto.username;
+    user.role = userProfileDto.role;
 
     return await this.usersRepository.save(user);
   }

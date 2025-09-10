@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable, UnauthorizedExce
 import { JwtService } from '@nestjs/jwt';
 import { FastifyRequest } from 'fastify';
 
-import { REQUEST_USER_KEY, TYPE_TOKEN_BEARER } from '@/iam/iam.constants';
+import { TYPE_TOKEN_BEARER } from '@/iam/iam.constants';
 import { jwtConfig } from '@/iam/login/config/jwt.config';
 
 @Injectable()
@@ -17,15 +17,20 @@ export class AccessTokenGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConfig.secret,
-        audience: jwtConfig.audience,
-        issuer: jwtConfig.issuer,
-      });
-      request[REQUEST_USER_KEY] = payload;
+      await this.jwtService.verifyAsync(
+        // const payload: any = await this.jwtService.verifyAsync(
+        token,
+        {
+          secret: jwtConfig.secret,
+          audience: jwtConfig.audience,
+          issuer: jwtConfig.issuer,
+        },
+      );
+      // request[REQUEST_USER_KEY] = payload;
     } catch (err) {
       throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, err);
     }
+
     return true;
   }
 
