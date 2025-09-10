@@ -1,6 +1,9 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv({ allErrors: true, useDefaults: true });
+const ajv = new Ajv({
+  allErrors: true,
+  useDefaults: true,
+});
 
 const schema = {
   type: 'object',
@@ -43,5 +46,6 @@ export const validateSchemaEnv = (env: unknown) => {
        .join('\n') ?? 'Unknown error';
     console.error(`Environment validation error: \n${errorMessages}`);
   }
+
   return env as EnvVariables;
 };

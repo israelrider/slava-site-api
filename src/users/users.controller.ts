@@ -1,29 +1,13 @@
-import {
-  Controller,
-  Put,
-  Get,
-  Body,
-  Param,
-  HttpStatus,
-  NotFoundException,
-  Delete,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Put, Get, Body, Param, HttpStatus, NotFoundException, Delete, BadRequestException } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { AuthType } from '@/iam/login/enums/auth-type.enum';
+
 import { UsersService } from './users.service';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { AccountsUsers } from './interfaces/accounts-users.interface';
-import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiNoContentResponse,
-  ApiNotFoundResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AuthGuard } from '../iam/login/decorators/auth-guard.decorator';
-import { AuthType } from '../iam/login/enums/auth-type.enum';
 
 interface GetUserResponse {
   user: AccountsUsers;
@@ -53,9 +37,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Find a user by id' })
   @ApiResponse({ status: 200, description: 'Get a user by id' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  public async findOneUser(
-    @Param('userId') userId: string,
-  ): Promise<AccountsUsers> {
+  public async findOneUser(@Param('userId') userId: string): Promise<AccountsUsers> {
     return this.usersService.findById(userId);
   }
 
@@ -63,9 +45,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Find a user profile by id' })
   @ApiResponse({ status: 200, description: 'Get a user profile by id' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  public async getUser(
-    @Param('userId') userId: string,
-  ): Promise<GetUserResponse> {
+  public async getUser(@Param('userId') userId: string): Promise<GetUserResponse> {
     const user = await this.findOneUser(userId);
 
     if (!user) {
@@ -82,10 +62,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Update a user profile by id' })
   @ApiResponse({ status: 200, description: 'Update a user profile by id' })
   @ApiBadRequestResponse({ description: 'User profile not updated' })
-  public async updateUserProfile(
-    @Param('userId') userId: string,
-    @Body() userProfileDto: UserProfileDto,
-  ): Promise<UpdateResponse> {
+  public async updateUserProfile(@Param('userId') userId: string, @Body() userProfileDto: UserProfileDto): Promise<UpdateResponse> {
     try {
       await this.usersService.updateUserProfile(userId, userProfileDto);
 
@@ -102,10 +79,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Update a user by id' })
   @ApiResponse({ status: 200, description: 'Update a user by id' })
   @ApiBadRequestResponse({ description: 'User not updated' })
-  public async updateUser(
-    @Param('userId') userId: string,
-    @Body() userUpdateDto: UserUpdateDto,
-  ): Promise<UpdateResponse> {
+  public async updateUser(@Param('userId') userId: string, @Body() userUpdateDto: UserUpdateDto): Promise<UpdateResponse> {
     try {
       await this.usersService.updateUser(userId, userUpdateDto);
 

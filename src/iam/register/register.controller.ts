@@ -1,21 +1,11 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpStatus,
-  BadRequestException,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { AuthType } from '@/iam/login/enums/auth-type.enum';
+import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+
 import { RegisterService } from './register.service';
 import { RegisterUserDto } from './dto/register-user.dto';
-import {
-  ApiBadRequestResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AuthType } from '../login/enums/auth-type.enum';
-import { AuthGuard } from '../login/decorators/auth-guard.decorator';
 
 interface RegisterResponse {
   message: string;
@@ -31,13 +21,10 @@ export class RegisterController {
   @HttpCode(201)
   @ApiOperation({ summary: 'Register a new user' })
   @ApiOkResponse({
-    description:
-      'Register a new user and send a confirmation email to the user',
+    description: 'Register a new user and send a confirmation email to the user',
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  public async register(
-    @Body() registerUserDto: RegisterUserDto,
-  ): Promise<RegisterResponse> {
+  public async register(@Body() registerUserDto: RegisterUserDto): Promise<RegisterResponse> {
     try {
       await this.registerService.register(registerUserDto);
 

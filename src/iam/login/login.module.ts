@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
-import { LoginService } from './login.service';
-import { LoginController } from './login.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from '../../users/models/users.model';
-import { JwtModule } from '@nestjs/jwt';
-import { UsersService } from '../../users/users.service';
-import { HashingService } from '../../common/hashing/hashing.service';
-import { Argon2Service } from '../../common/hashing/argon2.service';
 import { APP_GUARD } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Argon2Service } from '@/common/hashing/argon2.service';
+import { HashingService } from '@/common/hashing/hashing.service';
+import { Users } from '@/users/models/users.model';
+import { UsersService } from '@/users/users.service';
+import { provideUsersRepository } from '@/users/repositories/users.repository.provider';
+
+import { LoginController } from './login.controller';
+import { LoginService } from './login.service';
 import { AuthenticationGuard } from './guards/authentication/authentication.guard';
 import { AccessTokenGuard } from './guards/access-token/access-token.guard';
 import { jwtConfig } from './config/jwt.config';
-import { provideUsersRepository } from '../../users/repositories/users.repository.provider';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { provideUsersRepository } from '../../users/repositories/users.repositor
       },
     }),
   ],
+  controllers: [LoginController],
   providers: [
     {
       provide: HashingService,
@@ -44,6 +47,5 @@ import { provideUsersRepository } from '../../users/repositories/users.repositor
     UsersService,
     ...provideUsersRepository(),
   ],
-  controllers: [LoginController],
 })
 export class LoginModule {}

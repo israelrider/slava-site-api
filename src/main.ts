@@ -24,6 +24,7 @@ async function bootstrap() {
 
   // Plugins for Fastify
   await registerFastifyPlugins(app);
+
   // Swagger Configurations
   configureAuthSwaggerDocs(app);
   configureSwaggerDocs(app);
@@ -48,4 +49,5 @@ async function bootstrap() {
     Logger.debug(`Url for OpenApi: ${await app.getUrl()}/docs`, 'Swagger');
   }
 }
+
 bootstrap();

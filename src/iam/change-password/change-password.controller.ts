@@ -1,22 +1,11 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpStatus,
-  BadRequestException,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { AuthType } from '@/iam/login/enums/auth-type.enum';
+
 import { ChangePasswordService } from './change-password.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AuthGuard } from '../login/decorators/auth-guard.decorator';
-import { AuthType } from '../login/enums/auth-type.enum';
 
 interface ChangePasswordResponse {
   message: string;
@@ -34,13 +23,10 @@ export class ChangePasswordController {
   @HttpCode(200)
   @ApiOperation({ summary: 'Request Change Password' })
   @ApiOkResponse({
-    description:
-      'Request Change Password and send a confirmation email to the user',
+    description: 'Request Change Password and send a confirmation email to the user',
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  public async changePassword(
-    @Body() changePasswordDto: ChangePasswordDto,
-  ): Promise<ChangePasswordResponse> {
+  public async changePassword(@Body() changePasswordDto: ChangePasswordDto): Promise<ChangePasswordResponse> {
     try {
       await this.changePasswordService.changePassword(changePasswordDto);
 

@@ -1,21 +1,10 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpStatus,
-  BadRequestException,
-  HttpCode,
-} from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-import { ForgotPasswordService } from '../forgot-password/forgot-password.service';
-import { AuthGuard } from '../login/decorators/auth-guard.decorator';
-import { AuthType } from '../login/enums/auth-type.enum';
+import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ForgotPasswordService } from '@/iam/forgot-password/forgot-password.service';
+import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { AuthType } from '@/iam/login/enums/auth-type.enum';
+
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 interface ForgotPasswordResponse {
@@ -34,13 +23,10 @@ export class ForgotPasswordController {
   @HttpCode(200)
   @ApiOperation({ summary: 'Request Reset Password' })
   @ApiOkResponse({
-    description:
-      'Request Reset Password and send a confirmation email to the user',
+    description: 'Request Reset Password and send a confirmation email to the user',
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  public async forgotPassword(
-    @Body() forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<ForgotPasswordResponse> {
+  public async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<ForgotPasswordResponse> {
     try {
       await this.forgotPasswordService.forgotPassword(forgotPasswordDto);
 

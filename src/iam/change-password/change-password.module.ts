@@ -1,20 +1,25 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { MailerModule } from '@/common/mailer/mailer.module';
+import { Argon2Service } from '@/common/hashing/argon2.service';
+import { HashingService } from '@/common/hashing/hashing.service';
+import { AuthenticationGuard } from '@/iam/login/guards/authentication/authentication.guard';
+import { AccessTokenGuard } from '@/iam/login/guards/access-token/access-token.guard';
+import { Users } from '@/users/models/users.model';
+import { UsersService } from '@/users/users.service';
+import { provideUsersRepository } from '@/users/repositories/users.repository.provider';
+
 import { ChangePasswordController } from './change-password.controller';
 import { ChangePasswordService } from './change-password.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from '../../users/models/users.model';
-import { UsersService } from '../../users/users.service';
-import { MailerModule } from '../../common/mailer/mailer.module';
-import { Argon2Service } from '../../common/hashing/argon2.service';
-import { HashingService } from '../../common/hashing/hashing.service';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthenticationGuard } from '../login/guards/authentication/authentication.guard';
-import { AccessTokenGuard } from '../login/guards/access-token/access-token.guard';
-import { JwtService } from '@nestjs/jwt';
-import { provideUsersRepository } from '../../users/repositories/users.repository.provider';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]), MailerModule],
+  imports: [
+    TypeOrmModule.forFeature([Users]),
+    MailerModule
+  ],
   controllers: [ChangePasswordController],
   providers: [
     {

@@ -2,8 +2,9 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { Controller, Post, Body, HttpCode, Req, Res, BadRequestException } from '@nestjs/common';
 import { ApiUnauthorizedResponse, ApiOkResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
+import { LoginDto } from '@/iam/login/dto/login.dto';
+
 import { LoginService } from './login.service';
-import { LoginDto } from '../login/dto/login.dto';
 import { AuthType } from './enums/auth-type.enum';
 import { AuthGuard } from './decorators/auth-guard.decorator';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
