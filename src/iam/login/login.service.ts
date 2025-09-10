@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { UsersService } from '../../users/users.service';
-import { AccountsUsers } from '../../users/interfaces/accounts-users.interface';
-import { HashingService } from '../../common/hashing/hashing.service';
-import { Users } from '../../users/models/users.model';
+import { UsersService } from '@/users/users.service';
+import { AccountsUsers } from '@/users/interfaces/accounts-users.interface';
+import { HashingService } from '@/common/hashing/hashing.service';
+import { Users } from '@/users/models/users.model';
 
 import { jwtConfig } from './config/jwt.config';
 import { AuthResponse } from './interfaces/auth-response.interface';
@@ -61,22 +61,18 @@ export class LoginService {
   }
 
   public async refreshTokens(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
-    try {
-      const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(
-        refreshTokenDto.refreshToken,
-        // prettier-ignore
-        {
-          secret: jwtConfig.secret,
-          audience: jwtConfig.audience,
-          issuer: jwtConfig.issuer,
-        },
-      );
-      const user = await this.usersService.findBySub(id);
+    const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(
+      refreshTokenDto.refreshToken,
+      // prettier-ignore
+      {
+        secret: jwtConfig.secret,
+        audience: jwtConfig.audience,
+        issuer: jwtConfig.issuer,
+      },
+    );
+    const user = await this.usersService.findBySub(id);
 
-      return this.generateTokens(user);
-    } catch (err) {
-      throw new UnauthorizedException(err);
-    }
+    return this.generateTokens(user);
   }
 
   private async signToken<T>(userId: number, expiresIn: number, payload?: T): Promise<string> {

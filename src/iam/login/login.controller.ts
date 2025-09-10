@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { Controller, Post, Body, HttpCode, Req, Res, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Req, Res, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { ApiUnauthorizedResponse, ApiOkResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { TokenExpiredError } from '@nestjs/jwt';
 
 import { LoginDto } from '@/iam/login/dto/login.dto';
 
@@ -53,7 +54,23 @@ export class LoginController {
 
     const refreshTokenDto = new RefreshTokenDto();
     refreshTokenDto.refreshToken = refreshToken;
-    const result: AuthResponse = await this.loginService.refreshTokens(refreshTokenDto);
+
+    let result: AuthResponse = null;
+    try {
+      result = await this.loginService.refreshTokens(refreshTokenDto);
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        // You might throw a custom exception or return a specific error response
+        throw new UnauthorizedException(`Authentication token expired. ${error.message}`);
+      }
+
+      console.error(error);
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    if (!result || !result.refreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
     // Set HttpOnly cookie
     response.setCookie('refreshToken', result.refreshToken, setCookieOptions);
