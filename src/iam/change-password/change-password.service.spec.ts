@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChangePasswordService } from './change-password.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Users } from '../../users/models/users.model';
+import { User } from '@/users/models/user.model';
 import { Repository } from 'typeorm';
-import { UsersService } from '../../users/users.service';
-import { MailerService } from '../../common/mailer/mailer.service';
+import { UsersService } from '@/users/users.service';
+import { MailerService } from '@/common/mailer/mailer.service';
 
 const changePasswordUser = {
   email: 'test@example.it',
@@ -13,7 +13,7 @@ const changePasswordUser = {
 
 describe('ChangePasswordService', () => {
   let service: ChangePasswordService;
-  let repository: Repository<Users>;
+  let repository: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,7 +32,7 @@ describe('ChangePasswordService', () => {
           },
         },
         {
-          provide: getRepositoryToken(Users),
+          provide: getRepositoryToken(User),
           useValue: {
             findOneBy: jest.fn(),
             updateByPassword: jest.fn(),
@@ -43,7 +43,7 @@ describe('ChangePasswordService', () => {
     }).compile();
 
     service = module.get<ChangePasswordService>(ChangePasswordService);
-    repository = module.get<Repository<Users>>(getRepositoryToken(Users));
+    repository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   describe('change password user', () => {

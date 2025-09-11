@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Argon2Service } from '@/common/hashing/argon2.service';
 import { HashingService } from '@/common/hashing/hashing.service';
-import { Users } from '@/users/models/users.model';
+import { User } from '@/users/models/user.model';
 import { UsersService } from '@/users/users.service';
 import { provideUsersRepository } from '@/users/repositories/users.repository.provider';
 
@@ -17,7 +17,7 @@ import { jwtConfig } from './config/jwt.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       useFactory: () => {
         if (!jwtConfig.secret) {

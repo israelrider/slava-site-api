@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
 import { AccountsUsers } from '@/users/interfaces/accounts-users.interface';
 import { HashingService } from '@/common/hashing/hashing.service';
-import { Users } from '@/users/models/users.model';
+import { User } from '@/users/models/user.model';
 
 import { jwtConfig } from './config/jwt.config';
 import { AuthResponse } from './interfaces/auth-response.interface';
@@ -42,7 +42,7 @@ export class LoginService {
     }
   }
 
-  public async generateTokens(user: Users): Promise<AuthResponse> {
+  public async generateTokens(user: User): Promise<AuthResponse> {
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { email: user.email }),
       this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400)

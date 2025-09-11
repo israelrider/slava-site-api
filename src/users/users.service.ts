@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, HttpException, HttpStatus, Inject } from
 import { UpdateResult } from 'typeorm';
 
 import { AccountsUsers } from './interfaces/accounts-users.interface';
-import { Users } from './models/users.model';
+import { User } from './models/user.model';
 import { UserDto } from './dto/user.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
@@ -16,11 +16,11 @@ export class UsersService {
     private readonly usersRepository: UsersTypeOrmRepository,
   ) {}
 
-  public async findAll(): Promise<Users[]> {
+  public async findAll(): Promise<User[]> {
     return await this.usersRepository.findAll();
   }
 
-  public async findByEmail(email: string): Promise<Users> {
+  public async findByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
@@ -30,7 +30,7 @@ export class UsersService {
     return user;
   }
 
-  public async findBySub(sub: number): Promise<Users> {
+  public async findBySub(sub: number): Promise<User> {
     const user = await this.usersRepository.findBySub(sub);
 
     if (!user) {
@@ -40,7 +40,7 @@ export class UsersService {
     return user;
   }
 
-  public async findById(userId: string): Promise<Users> {
+  public async findById(userId: string): Promise<User> {
     const user = await this.usersRepository.findById(userId);
 
     if (!user) {
@@ -58,7 +58,7 @@ export class UsersService {
     }
   }
 
-  public async updateByEmail(email: string): Promise<Users> {
+  public async updateByEmail(email: string): Promise<User> {
     try {
       return await this.usersRepository.updateByEmail(email);
     } catch (err) {
@@ -66,7 +66,7 @@ export class UsersService {
     }
   }
 
-  public async updateByPassword(email: string, password: string): Promise<Users> {
+  public async updateByPassword(email: string, password: string): Promise<User> {
     try {
       return await this.usersRepository.updateByPassword(email, password);
     } catch (err) {
@@ -74,7 +74,7 @@ export class UsersService {
     }
   }
 
-  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<Users> {
+  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<User> {
     try {
       return await this.usersRepository.updateUserProfile(id, userProfileDto);
     } catch (err) {

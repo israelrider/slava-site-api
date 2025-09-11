@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Users } from '@/users/models/users.model';
+import { User } from '@/users/models/user.model';
 import { MailerService } from '@/common/mailer/mailer.service';
 import { UtilsService } from '@/common/utils/utils.service';
 import { HashingService } from '@/common/hashing/hashing.service';
@@ -13,16 +13,14 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 @Injectable()
 export class ForgotPasswordService {
   constructor(
-    @InjectRepository(Users)
-    private readonly userRepository: Repository<Users>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly mailerService: MailerService,
     private readonly utilsService: UtilsService,
     private readonly hashingService: HashingService,
   ) {}
 
-  public async forgotPassword(
-    forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<Users> {
+  public async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<User> {
     const userUpdate = await this.userRepository.findOneBy({
       email: forgotPasswordDto.email,
     });
@@ -30,17 +28,13 @@ export class ForgotPasswordService {
     userUpdate.password = await this.hashingService.hash(passwordRand);
 
     this.sendMailForgotPassword(userUpdate.email, passwordRand).catch(
-      (err: unknown) =>
-        Logger.error('Forgot Password: Send Mail Failed (non bloccante)', err),
+      (err: unknown) => Logger.error('Forgot Password: Send Mail Failed (non bloccante)', err),
     );
 
     return await this.userRepository.save(userUpdate);
   }
 
-  private async sendMailForgotPassword(
-    email: string,
-    password: string,
-  ): Promise<void> {
+  private async sendMailForgotPassword(email: string, password: string): Promise<void> {
     try {
       await this.mailerService.sendMail({
         to: email,

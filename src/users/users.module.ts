@@ -5,14 +5,14 @@ import { MailerModule } from '@/common/mailer/mailer.module';
 import { Argon2Service } from '@/common/hashing/argon2.service';
 import { HashingService } from '@/common/hashing/hashing.service';
 
-import { Users } from './models/users.model';
+import { User } from './models/user.model';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { provideUsersRepository } from './repositories/users.repository.provider';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([User]),
     MailerModule
   ],
   controllers: [UsersController],

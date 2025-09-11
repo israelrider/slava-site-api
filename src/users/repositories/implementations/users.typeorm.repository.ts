@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
-import { Users } from '@/users/models/users.model';
+import { User } from '@/users/models/user.model';
 import { UsersRepository } from '@/users/repositories/users.repository.interface';
 import { UserProfileDto } from '@/users/dto/user-profile.dto';
 import { UserUpdateDto } from '@/users/dto/user-update.dto';
@@ -11,7 +11,7 @@ import { HashingService } from '@/common/hashing/hashing.service';
 
 export class UsersTypeOrmRepository implements UsersRepository {
   constructor(
-    private readonly usersRepository: Repository<Users>,
+    private readonly usersRepository: Repository<User>,
     private readonly hashingService: HashingService,
   ) {}
 

@@ -1,8 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
-export class Users {
-  @PrimaryGeneratedColumn()
+@Entity('users') // Table name will be "users"
+export class User {
+  @PrimaryGeneratedColumn({
+    unsigned: true,
+  })
   id: number;
 
   @Column()

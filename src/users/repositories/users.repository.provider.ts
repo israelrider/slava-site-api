@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { DataSource } from '@/constants';
-import { Users } from '@/users/models/users.model';
+import { User } from '@/users/models/user.model';
 import { HashingService } from '@/common/hashing/hashing.service';
 
 import { USERS_REPOSITORY_TOKEN } from './users.repository.interface';
@@ -38,8 +38,8 @@ function provideUsersRepositoryFactory(dependenciesProvider: UsersRepoDependenci
 @Injectable()
 export class UsersRepoDependenciesProvider {
   constructor(
-    @InjectRepository(Users)
-    public typeOrmRepository: Repository<Users>,
+    @InjectRepository(User)
+    public typeOrmRepository: Repository<User>,
     public hashingService: HashingService,
   ) {}
 }

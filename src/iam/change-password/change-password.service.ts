@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { MailerService } from '../../common/mailer/mailer.service';
-import { changePasswordEmail } from '../../common/mailer/mailer.constants';
-import { Users } from '@/users/models/users.model';
+
+import { UsersService } from '@/users/users.service';
+import { ChangePasswordDto } from '@/iam/change-password/dto/change-password.dto';
+import { MailerService } from '@/common/mailer/mailer.service';
+import { changePasswordEmail } from '@/common/mailer/mailer.constants';
+import { User } from '@/users/models/user.model';
 
 @Injectable()
 export class ChangePasswordService {
@@ -14,7 +15,7 @@ export class ChangePasswordService {
 
   public async changePassword(
     changePasswordDto: ChangePasswordDto,
-  ): Promise<Users> {
+  ): Promise<User> {
     this.sendMailChangePassword(changePasswordDto).catch((err: unknown) =>
       Logger.error('Change Password: Send Mail Failed!', err),
     );
