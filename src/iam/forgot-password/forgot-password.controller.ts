@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } fro
 import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ForgotPasswordService } from '@/iam/forgot-password/forgot-password.service';
-import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { Auth } from '@/iam/login/decorators/auth.decorator';
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
 
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -14,7 +14,7 @@ interface ForgotPasswordResponse {
 
 @ApiTags('auth')
 @ApiBearerAuth()
-@AuthGuard(AuthType.None)
+@Auth(AuthType.None)
 @Controller('auth/forgot-password')
 export class ForgotPasswordController {
   constructor(private readonly forgotPasswordService: ForgotPasswordService) {}

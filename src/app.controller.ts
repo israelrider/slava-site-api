@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 import { AppService } from '@/app.service';
-import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { Auth } from '@/iam/login/decorators/auth.decorator';
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
 
 @ApiTags('app')
@@ -10,7 +10,7 @@ import { AuthType } from '@/iam/login/enums/auth-type.enum';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @AuthGuard(AuthType.None)
+  @Auth(AuthType.None)
   @Get()
   @ApiOperation({ summary: 'Get public resource' })
   @ApiOkResponse({
@@ -20,7 +20,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @AuthGuard(AuthType.Bearer)
+  @Auth(AuthType.Bearer)
   @Get('secure')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get protected resource' })

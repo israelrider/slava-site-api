@@ -1,7 +1,7 @@
 import { Controller, Put, Get, Body, Param, HttpStatus, NotFoundException, Delete, BadRequestException } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { Auth } from '@/iam/login/decorators/auth.decorator';
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
 
 import { UsersService } from './users.service';
@@ -21,7 +21,7 @@ interface UpdateResponse {
 
 @ApiTags('users')
 @ApiBearerAuth()
-@AuthGuard(AuthType.Bearer)
+@Auth(AuthType.Bearer)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

@@ -1,7 +1,7 @@
 import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { Auth } from '@/iam/login/decorators/auth.decorator';
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
 
 import { ChangePasswordService } from './change-password.service';
@@ -14,7 +14,7 @@ interface ChangePasswordResponse {
 
 @ApiTags('auth')
 @ApiBearerAuth()
-@AuthGuard(AuthType.Bearer)
+@Auth(AuthType.Bearer)
 @Controller('auth/change-password')
 export class ChangePasswordController {
   constructor(private readonly changePasswordService: ChangePasswordService) {}

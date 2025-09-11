@@ -6,13 +6,13 @@ import { LoginDto } from '@/iam/login/dto/login.dto';
 
 import { LoginService } from './login.service';
 import { AuthType } from './enums/auth-type.enum';
-import { AuthGuard } from './decorators/auth-guard.decorator';
+import { Auth } from './decorators/auth.decorator';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { AuthResponse } from './interfaces/auth-response.interface';
 import { setCookieOptions } from './utils';
 
 @ApiTags('auth')
-@AuthGuard(AuthType.None)
+@Auth(AuthType.None)
 @Controller('auth')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}

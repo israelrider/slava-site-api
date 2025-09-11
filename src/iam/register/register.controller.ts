@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } fro
 import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
-import { AuthGuard } from '@/iam/login/decorators/auth-guard.decorator';
+import { Auth } from '@/iam/login/decorators/auth.decorator';
 
 import { RegisterService } from './register.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -12,7 +12,7 @@ interface RegisterResponse {
   status: number;
 }
 @ApiTags('auth')
-@AuthGuard(AuthType.None)
+@Auth(AuthType.None)
 @Controller('auth/register')
 export class RegisterController {
   constructor(private readonly registerService: RegisterService) {}
