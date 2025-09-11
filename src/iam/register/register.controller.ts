@@ -3,6 +3,8 @@ import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiTags } from '@ne
 
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
 import { Auth } from '@/iam/login/decorators/auth.decorator';
+import { Role } from '@/iam/login/enums/roles.enum';
+import { UserDto } from '@/users/dto/user.dto';
 
 import { RegisterService } from './register.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -11,6 +13,7 @@ interface RegisterResponse {
   message: string;
   status: number;
 }
+
 @ApiTags('auth')
 @Auth(AuthType.None)
 @Controller('auth/register')
@@ -26,14 +29,19 @@ export class RegisterController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   public async register(@Body() registerUserDto: RegisterUserDto): Promise<RegisterResponse> {
     try {
-      await this.registerService.register(registerUserDto);
+      const userDto = {
+        ...registerUserDto,
+        role: Role.reader,
+      };
+      await this.registerService.register(userDto);
 
       return {
         message: 'User registration successfully!',
         status: HttpStatus.CREATED,
       };
     } catch (err) {
-      throw new BadRequestException(err, 'Error: User not registration!');
+      console.log(err);
+      throw new BadRequestException('Registration failed.');
     }
   }
 }

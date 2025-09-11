@@ -24,7 +24,7 @@ export class User {
   role: string;
 
   @Column({
-    length: 30,
+    length: 255,
   })
   password: string;
 }

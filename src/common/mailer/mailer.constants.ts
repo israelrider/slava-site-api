@@ -1,7 +1,7 @@
 import { ChangePasswordDto } from '@/iam/change-password/dto/change-password.dto';
-import { RegisterUserDto } from '@/iam/register/dto/register-user.dto';
+import { UserDto } from '@/users/dto/user.dto';
 
-export const registrationEmail = (user: RegisterUserDto) => {
+export const registrationEmail = (user: UserDto) => {
   return `<html>
             <body>
               <div>

@@ -19,6 +19,6 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(30)
+  @MaxLength(255)
   password: string;
 }
