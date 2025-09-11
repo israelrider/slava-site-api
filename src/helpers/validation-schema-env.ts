@@ -14,7 +14,6 @@ const schema = {
     TYPEORM_PASSWORD: { type: 'string' },
     TYPEORM_DATABASE: { type: 'string' },
   },
-  // prettier-ignore
   required: [
     'TYPEORM_HOST',
     'TYPEORM_PORT',
@@ -36,7 +35,6 @@ interface EnvVariables {
 
 export const validateSchemaEnv = (env: unknown) => {
   const valid = validate(env);
-  // prettier-ignore
   if (!valid) {
     const errorMessages = validate.errors
         ?.map(

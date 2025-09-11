@@ -47,7 +47,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
 
   public async updateByEmail(email: string) {
     const user = await this.usersRepository.findOneBy({ email: email });
-    // prettier-ignore
+
     user.password = await this.hashingService.hash(
       Math.random().toString(36).slice(-8),
     );

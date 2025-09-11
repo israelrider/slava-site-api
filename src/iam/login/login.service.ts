@@ -43,7 +43,6 @@ export class LoginService {
   }
 
   public async generateTokens(user: Users): Promise<AuthResponse> {
-    // prettier-ignore
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { email: user.email }),
       this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400)
@@ -63,7 +62,6 @@ export class LoginService {
   public async refreshTokens(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
     const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(
       refreshTokenDto.refreshToken,
-      // prettier-ignore
       {
         secret: jwtConfig.secret,
         audience: jwtConfig.audience,

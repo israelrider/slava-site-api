@@ -19,7 +19,6 @@ export class AuthenticationGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // prettier-ignore
     const authTypes = this.reflector.getAllAndOverride<AuthType[]>(
       AUTH_TYPE_KEY,
       [
@@ -31,7 +30,6 @@ export class AuthenticationGuard implements CanActivate {
     let error = new UnauthorizedException();
 
     for (const instance of guards) {
-      // prettier-ignore
       const canActivate = await Promise.resolve(
         instance.canActivate(context)
       ).catch((err) => error = err);
