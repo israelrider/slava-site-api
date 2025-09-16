@@ -31,7 +31,7 @@ export class RegisterController {
     try {
       const userDto = {
         ...registerUserDto,
-        role: Role.reader,
+        role: Role.Reader,
       };
       await this.registerService.register(userDto);
 

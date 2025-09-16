@@ -6,7 +6,7 @@ export async function registerFastifyPlugins(app: NestFastifyApplication) {
   await app.register(require('@fastify/cors'), {
     origin: process.env.ENDPOINT_URL_CORS,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Access-Control-Allow-Origin, Access-Control-Allow-Methods',
+    allowedHeaders: 'Content-Type, Accept, Access-Control-Allow-Origin, Access-Control-Allow-Methods, Authorization',
     credentials: true,
   });
 
