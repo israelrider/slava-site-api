@@ -82,18 +82,6 @@ or
     $ pnpm start:prod
 ```
 
-### Running the app in REPL mode
-
-```bash
-   pnpm start --entryFile repl
-```
-
-or
-
-```bash
-   pnpm start:repl
-```
-
 ### Docker
 
 There is a `docker-compose.yml` file for starting MySQL with Docker.
