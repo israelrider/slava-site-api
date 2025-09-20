@@ -13,13 +13,13 @@ export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
-  @Roles(Role.Admin)
+  @Roles(Role.Reader)
   async create(@Body() createCatDto: CreateCatDto) {
     this.catsService.create(createCatDto);
   }
 
   @Get('xyu')
-  @Roles(Role.Admin)
+  @Roles(Role.Reader)
   async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
   }

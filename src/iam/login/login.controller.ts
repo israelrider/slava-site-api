@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { Controller, Post, Body, HttpCode, Req, Res, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Req, Res, BadRequestException, UnauthorizedException, Logger, } from '@nestjs/common';
 import { ApiUnauthorizedResponse, ApiOkResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { TokenExpiredError } from '@nestjs/jwt';
 
@@ -64,7 +64,7 @@ export class LoginController {
         throw new UnauthorizedException(`Authentication token expired. ${error.message}`);
       }
 
-      console.error(error);
+      Logger.error('Error during token refresh', error);
       throw new UnauthorizedException('Invalid refresh token');
     }
 

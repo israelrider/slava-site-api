@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 
-import { ProtectedModule } from '@/protected/protected.module';
 import { IamModule } from '@/iam/iam.module';
+import { AuthenticationGuard } from '@/iam/login/guards/authentication/authentication.guard';
+import { AccessTokenGuard } from '@/iam/login/guards/access-token/access-token.guard';
+import { RolesGuard } from '@/iam/login/guards/roles/roles.guard';
+import { jwtConfig } from '@/iam/login/config/jwt.config';
+import { ProtectedModule } from '@/protected/protected.module';
 
 @Module({
   imports: [
@@ -24,8 +30,25 @@ import { IamModule } from '@/iam/iam.module';
         },
       }),
     }),
+    JwtModule.registerAsync({
+      global: true,
+      useFactory: () => ({
+        secret: jwtConfig.secret,
+        audience: jwtConfig.audience,
+        issuer: jwtConfig.issuer,
+      }),
+    }),
     IamModule,
     ProtectedModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard,
+    },
+    AccessTokenGuard,
+    RolesGuard,
+
   ],
 })
 export class AppModule {}

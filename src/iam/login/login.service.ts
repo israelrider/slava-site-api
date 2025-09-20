@@ -44,8 +44,8 @@ export class LoginService {
 
   public async generateTokens(user: User): Promise<AuthResponse> {
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { email: user.email }),
-      this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400)
+      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { role: user.role }),
+      this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400),
     ]);
 
     return {
@@ -60,14 +60,7 @@ export class LoginService {
   }
 
   public async refreshTokens(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
-    const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(
-      refreshTokenDto.refreshToken,
-      {
-        secret: jwtConfig.secret,
-        audience: jwtConfig.audience,
-        issuer: jwtConfig.issuer,
-      },
-    );
+    const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(refreshTokenDto.refreshToken);
     const user = await this.usersService.findBySub(id);
 
     return this.generateTokens(user);
@@ -80,9 +73,6 @@ export class LoginService {
         ...payload,
       },
       {
-        secret: jwtConfig.secret,
-        audience: jwtConfig.audience,
-        issuer: jwtConfig.issuer,
         expiresIn,
       },
     );

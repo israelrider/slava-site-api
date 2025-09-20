@@ -2,31 +2,24 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable, UnauthorizedExce
 import { JwtService } from '@nestjs/jwt';
 import { FastifyRequest } from 'fastify';
 
-import { TYPE_TOKEN_BEARER } from '@/iam/iam.constants';
-import { jwtConfig } from '@/iam/login/config/jwt.config';
+import { TYPE_TOKEN_BEARER, ROLE, } from '@/iam/iam.constants';
+import { JWTPayload } from '@/iam/login/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request: FastifyRequest = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
     }
 
     try {
-      await this.jwtService.verifyAsync(
-        // const payload: any = await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: jwtConfig.secret,
-          audience: jwtConfig.audience,
-          issuer: jwtConfig.issuer,
-        },
-      );
-      // request[REQUEST_USER_KEY] = payload;
+      const payload: JWTPayload = await this.jwtService.verifyAsync(token);
+      // Pass user roles to the next roles guard.
+      request.headers[ROLE] = payload?.role;
     } catch (err) {
       throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, err);
     }

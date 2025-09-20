@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, BadRequestException, HttpCode, Logger } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
@@ -40,7 +40,7 @@ export class RegisterController {
         status: HttpStatus.CREATED,
       };
     } catch (err) {
-      console.log(err);
+      Logger.error('User registration failed!', err);
       throw new BadRequestException('Registration failed.');
     }
   }
