@@ -5,8 +5,8 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "dev": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "nest start",
+    "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint {src,test}/**/*.ts --fix",

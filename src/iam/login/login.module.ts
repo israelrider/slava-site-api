@@ -3,11 +3,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { Argon2Service } from '@/common/hashing/argon2.service';
-import { HashingService } from '@/common/hashing/hashing.service';
 import { User } from '@/users/models/user.model';
-import { UsersService } from '@/users/users.service';
-import { provideUsersRepository } from '@/users/repositories/users.repository.provider';
+import { UsersModule } from '@/users/users.module';
 
 import { LoginController } from './login.controller';
 import { LoginService } from './login.service';
@@ -31,21 +28,16 @@ import { jwtConfig } from './config/jwt.config';
         };
       },
     }),
+    UsersModule,
   ],
   controllers: [LoginController],
   providers: [
-    {
-      provide: HashingService,
-      useClass: Argon2Service,
-    },
     {
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
     },
     AccessTokenGuard,
     LoginService,
-    UsersService,
-    ...provideUsersRepository(),
   ],
 })
 export class LoginModule {}

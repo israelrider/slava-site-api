@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
+
 import { HashingService } from './hashing.service';
 
 @Injectable()

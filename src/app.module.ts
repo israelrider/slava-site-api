@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ProtectedModule } from '@/protected/protected.module';
-import { UsersModule } from '@/users/users.module';
 import { IamModule } from '@/iam/iam.module';
 
 @Module({
@@ -26,7 +25,6 @@ import { IamModule } from '@/iam/iam.module';
       }),
     }),
     IamModule,
-    UsersModule,
     ProtectedModule,
   ],
 })
