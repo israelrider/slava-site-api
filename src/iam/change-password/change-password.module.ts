@@ -11,8 +11,8 @@ import { ChangePasswordService } from './change-password.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    MailerModule,
     UsersModule,
+    MailerModule,
   ],
   controllers: [ChangePasswordController],
   providers: [

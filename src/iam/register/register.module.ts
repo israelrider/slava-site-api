@@ -11,8 +11,8 @@ import { RegisterService } from './register.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    MailerModule,
     UsersModule,
+    MailerModule,
   ],
   controllers: [RegisterController],
   providers: [

@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UsersService } from '@/users/users.service';
-import { AccountsUsers } from '@/users/interfaces/accounts-users.interface';
-import { HashingService } from '@/common/hashing/hashing.service';
 import { User } from '@/users/models/user.model';
+import { HashingService } from '@/common/hashing/hashing.service';
 
 import { jwtConfig } from './config/jwt.config';
 import { AuthResponse } from './interfaces/auth-response.interface';
@@ -20,18 +20,18 @@ export class LoginService {
     private readonly hashingService: HashingService,
   ) {}
 
-  public async findUserByEmail(loginDto: LoginDto): Promise<AccountsUsers> {
+  public async findUserByEmail(loginDto: LoginDto): Promise<AccountUser> {
     return await this.usersService.findByEmail(loginDto.email);
   }
 
   public async login(loginDto: LoginDto): Promise<AuthResponse> {
     try {
-      const user = await this.findUserByEmail(loginDto);
+      const user: AccountUser = await this.findUserByEmail(loginDto);
       if (!user) {
         throw new UnauthorizedException('User does not exists');
       }
 
-      const passwordIsValid = await this.hashingService.compare(loginDto.password, user.password);
+      const passwordIsValid: boolean = await this.hashingService.compare(loginDto.password, user.password);
       if (!passwordIsValid) {
         throw new UnauthorizedException('Authentication failed. Wrong password');
       }
@@ -55,13 +55,14 @@ export class LoginService {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     };
   }
 
   public async refreshTokens(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
     const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(refreshTokenDto.refreshToken);
-    const user = await this.usersService.findBySub(id);
+    const user: AccountUser = await this.usersService.findBySub(id);
 
     return this.generateTokens(user);
   }

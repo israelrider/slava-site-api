@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
 
-import { AccountsUsers } from './interfaces/accounts-users.interface';
-import { User } from './models/user.model';
+import { AccountUser } from './interfaces/account-user.interface';
+import { USERS_REPOSITORY_TOKEN } from './interfaces/users.repository.interface';
 import { UserDto } from './dto/user.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
-import { USERS_REPOSITORY_TOKEN } from './repositories/users.repository.interface';
 import { UsersTypeOrmRepository } from './repositories/implementations/users.typeorm.repository';
 
 @Injectable()
@@ -16,12 +15,12 @@ export class UsersService {
     private readonly usersRepository: UsersTypeOrmRepository,
   ) {}
 
-  public async findAll(): Promise<User[]> {
+  public async findAll(): Promise<AccountUser[]> {
     return await this.usersRepository.findAll();
   }
 
-  public async findByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findByEmail(email);
+  public async findByEmail(email: string): Promise<AccountUser> {
+    const user: AccountUser | null = await this.usersRepository.byEmailWithPassword(email);
 
     if (!user) {
       throw new NotFoundException(`User not found`);
@@ -30,18 +29,12 @@ export class UsersService {
     return user;
   }
 
-  public async findBySub(sub: number): Promise<User> {
-    const user = await this.usersRepository.findBySub(sub);
-
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
-
-    return user;
+  public async findBySub(sub: number): Promise<AccountUser> {
+    return await this.usersRepository.findBySub(sub);
   }
 
-  public async findById(userId: string): Promise<User> {
-    const user = await this.usersRepository.findById(userId);
+  public async findById(userId: string): Promise<AccountUser> {
+    const user: AccountUser | null = await this.usersRepository.findById(userId);
 
     if (!user) {
       throw new NotFoundException(`User #${userId} not found`);
@@ -50,7 +43,7 @@ export class UsersService {
     return user;
   }
 
-  public async create(userDto: UserDto): Promise<AccountsUsers> {
+  public async create(userDto: UserDto): Promise<AccountUser> {
     try {
       return await this.usersRepository.create(userDto);
     } catch (err) {
@@ -58,7 +51,7 @@ export class UsersService {
     }
   }
 
-  public async updateByEmail(email: string): Promise<User> {
+  public async updateByEmail(email: string): Promise<AccountUser> {
     try {
       return await this.usersRepository.updateByEmail(email);
     } catch (err) {
@@ -66,7 +59,7 @@ export class UsersService {
     }
   }
 
-  public async updateByPassword(email: string, password: string): Promise<User> {
+  public async updateByPassword(email: string, password: string): Promise<AccountUser> {
     try {
       return await this.usersRepository.updateByPassword(email, password);
     } catch (err) {
@@ -74,7 +67,7 @@ export class UsersService {
     }
   }
 
-  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<User> {
+  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<AccountUser> {
     try {
       return await this.usersRepository.updateUserProfile(id, userProfileDto);
     } catch (err) {
@@ -90,8 +83,8 @@ export class UsersService {
     }
   }
 
-  public async deleteUser(id: string): Promise<void> {
-    const user = await this.findById(id);
+  public async deleteUser(id: string): Promise<AccountUser> {
+    const user: AccountUser = await this.findById(id);
     return await this.usersRepository.deleteUser(user);
   }
 }

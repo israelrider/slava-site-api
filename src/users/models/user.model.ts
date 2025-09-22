@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('users') // Table name will be "users"
 export class User {
@@ -25,6 +25,15 @@ export class User {
 
   @Column({
     length: 255,
+    select: false,
   })
   password: string;
+
+  // This column will be automatically set on creation.
+  @CreateDateColumn()
+  createdAt: Date;
+
+  // This column will be automatically updated on every save.
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { DataSource } from '@/constants';
 import { User } from '@/users/models/user.model';
 import { HashingService } from '@/common/hashing/hashing.service';
+import { USERS_REPOSITORY_TOKEN } from '@/users/interfaces/users.repository.interface';
 
-import { USERS_REPOSITORY_TOKEN } from './users.repository.interface';
 import { UsersTypeOrmRepository } from './implementations/users.typeorm.repository';
 
 export function provideUsersRepository(): Provider[] {

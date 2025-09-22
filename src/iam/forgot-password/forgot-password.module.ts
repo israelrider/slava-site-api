@@ -12,9 +12,9 @@ import { ForgotPasswordController } from './forgot-password.controller';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    UsersModule,
     MailerModule,
     UtilsModule,
-    UsersModule,
   ],
   controllers: [ForgotPasswordController],
   providers: [

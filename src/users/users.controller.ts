@@ -7,17 +7,9 @@ import { AuthType } from '@/iam/login/enums/auth-type.enum';
 import { UsersService } from './users.service';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
-import { AccountsUsers } from './interfaces/accounts-users.interface';
-
-interface GetUserResponse {
-  user: AccountsUsers;
-  status: number;
-}
-
-interface UpdateResponse {
-  message: string;
-  status: number;
-}
+import { AccountUser } from './interfaces/account-user.interface';
+import { GetUserResponse } from './interfaces/get-user-response.interface';
+import { UpdateResponse } from './interfaces/update-response.interface';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -29,7 +21,7 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'Get all users' })
-  public async findAllUser(): Promise<AccountsUsers[]> {
+  public async findAllUsers(): Promise<AccountUser[]> {
     return this.usersService.findAll();
   }
 
@@ -37,7 +29,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Find a user by id' })
   @ApiResponse({ status: 200, description: 'Get a user by id' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  public async findOneUser(@Param('userId') userId: string): Promise<AccountsUsers> {
+  public async findOneUser(@Param('userId') userId: string): Promise<AccountUser> {
     return this.usersService.findById(userId);
   }
 
@@ -46,7 +38,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Get a user profile by id' })
   @ApiNotFoundResponse({ description: 'User not found' })
   public async getUser(@Param('userId') userId: string): Promise<GetUserResponse> {
-    const user = await this.findOneUser(userId);
+    const user: AccountUser = await this.findOneUser(userId);
 
     if (!user) {
       throw new NotFoundException('User does not exist!');
@@ -96,7 +88,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete a user by id' })
   @ApiResponse({ status: 200, description: 'Delete a user by id' })
   @ApiNoContentResponse({ description: 'User not deleted' })
-  public async deleteUser(@Param('userId') userId: string): Promise<void> {
-    await this.usersService.deleteUser(userId);
+  public async deleteUser(@Param('userId') userId: string): Promise<AccountUser> {
+    return await this.usersService.deleteUser(userId);
   }
 }

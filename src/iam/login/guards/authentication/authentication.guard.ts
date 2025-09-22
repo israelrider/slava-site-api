@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 
 import { AuthType } from '@/iam/login/enums/auth-type.enum';
 import { AccessTokenGuard } from '@/iam/login/guards/access-token/access-token.guard';
-import {RolesGuard}  from '@/iam/login/guards/roles/roles.guard';
+import { RolesGuard } from '@/iam/login/guards/roles/roles.guard';
 import { AUTH_TYPE_KEY } from '@/iam/login/decorators/auth.decorator';
 
 @Injectable()
@@ -29,18 +29,15 @@ export class AuthenticationGuard implements CanActivate {
       ]
     ) ?? [AuthenticationGuard.defaultAuthType];
     const guards = authTypes.map((type) => this.authTypeGuardMap[type]).flat();
-    let error = new UnauthorizedException();
 
     for (const instance of guards) {
-      const canActivate = await Promise.resolve(
-        instance.canActivate(context)
-      ).catch((err) => error = err);
+      const canActivate = await Promise.resolve(instance.canActivate(context));
 
       if (canActivate) {
         return true;
       }
     }
 
-    throw error;
+    throw new UnauthorizedException();
   }
 }

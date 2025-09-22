@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { FastifyRequest } from 'fastify';
 
@@ -13,7 +13,8 @@ export class AccessTokenGuard implements CanActivate {
     const request: FastifyRequest = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      Logger.log(`No token found in ${request.method} request ${request.url}`, 'AccessTokenGuard');
+      throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, 'No token');
     }
 
     try {
@@ -21,6 +22,7 @@ export class AccessTokenGuard implements CanActivate {
       // Pass user roles to the next roles guard.
       request.headers[ROLE] = payload?.role;
     } catch (err) {
+      Logger.error('Error verifying token', err);
       throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, err);
     }
 

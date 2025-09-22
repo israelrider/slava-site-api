@@ -1,13 +1,13 @@
 import { NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 
 import { User } from '@/users/models/user.model';
-import { UsersRepository } from '@/users/repositories/users.repository.interface';
 import { UserProfileDto } from '@/users/dto/user-profile.dto';
 import { UserUpdateDto } from '@/users/dto/user-update.dto';
 import { UserDto } from '@/users/dto/user.dto';
 import { HashingService } from '@/common/hashing/hashing.service';
-// import { AccountsUsers } from '@/users/interfaces/accounts-users.interface';
+import { AccountUser } from '@/users/interfaces/account-user.interface';
+import { UsersRepository } from '@/users/interfaces/users.repository.interface';
 
 export class UsersTypeOrmRepository implements UsersRepository {
   constructor(
@@ -15,17 +15,24 @@ export class UsersTypeOrmRepository implements UsersRepository {
     private readonly hashingService: HashingService,
   ) {}
 
-  public async findAll() {
+  public async findAll(): Promise<AccountUser[]> {
     return await this.usersRepository.find();
   }
 
-  public async findByEmail(email: string) {
+  public async findByEmail(email: string): Promise<AccountUser | null> {
     return await this.usersRepository.findOneBy({
       email: email,
     });
   }
 
-  public async findBySub(sub: number) {
+  public async byEmailWithPassword(email: string): Promise<AccountUser | null> {
+    return await this.usersRepository.createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
+  }
+
+  public async findBySub(sub: number): Promise<AccountUser> {
     if (!sub && sub !== 0) {
       throw new NotFoundException('Sub Not Found');
     }
@@ -35,17 +42,17 @@ export class UsersTypeOrmRepository implements UsersRepository {
     });
   }
 
-  public async findById(userId: string) {
+  public async findById(userId: string): Promise<AccountUser | null> {
     return await this.usersRepository.findOneBy({
       id: +userId,
     });
   }
 
-  public async create(userDto: UserDto) {
+  public async create(userDto: UserDto): Promise<AccountUser> {
     return await this.usersRepository.save(userDto);
   }
 
-  public async updateByEmail(email: string) {
+  public async updateByEmail(email: string): Promise<AccountUser> {
     const user = await this.usersRepository.findOneBy({ email: email });
 
     user.password = await this.hashingService.hash(
@@ -55,14 +62,14 @@ export class UsersTypeOrmRepository implements UsersRepository {
     return await this.usersRepository.save(user);
   }
 
-  public async updateByPassword(email: string, password: string) {
+  public async updateByPassword(email: string, password: string): Promise<AccountUser> {
     const user = await this.usersRepository.findOneBy({ email: email });
     user.password = await this.hashingService.hash(password);
 
     return await this.usersRepository.save(user);
   }
 
-  public async updateUserProfile(id: string, userProfileDto: UserProfileDto) {
+  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<AccountUser> {
     const user = await this.usersRepository.findOneBy({ id: +id });
     user.name = userProfileDto.name;
     user.email = userProfileDto.email;
@@ -71,7 +78,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     return await this.usersRepository.save(user);
   }
 
-  public async updateUser(id: string, userUpdateDto: UserUpdateDto) {
+  public async updateUser(id: string, userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
     return await this.usersRepository.update(
       {
         id: +id,
@@ -80,7 +87,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     );
   }
 
-  public async deleteUser(user: any) {
-    await this.usersRepository.remove(user);
+  public async deleteUser(user: AccountUser): Promise<AccountUser> {
+    return await this.usersRepository.remove(user);
   }
 }
