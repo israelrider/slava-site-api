@@ -1,4 +1,4 @@
-import { UpdateResult } from 'typeorm';
+import { InsertResult, UpdateResult } from 'typeorm';
 
 import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UserProfileDto } from 'src/users/dto/user-profile.dto';
@@ -14,17 +14,15 @@ export interface UsersRepository {
 
   findBySub(sub: number): Promise<AccountUser>;
 
-  findById(userId: string): Promise<AccountUser | null>;
+  findById(userId: number): Promise<AccountUser | null>;
 
-  create(userDto: UserDto): Promise<AccountUser>;
+  create(userDto: UserDto): Promise<InsertResult>;
 
-  updateByEmail(email: string): Promise<AccountUser>;
+  updatePassword(email: string, password: string): Promise<UpdateResult>;
 
-  updateByPassword(email: string, password: string): Promise<AccountUser>;
+  updateUserProfile(id: number, userProfileDto: UserProfileDto): Promise<UpdateResult>;
 
-  updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<AccountUser>;
-
-  updateUser(id: string, userUpdateDto: UserUpdateDto): Promise<UpdateResult>;
+  updateUser(id: number, userUpdateDto: UserUpdateDto): Promise<UpdateResult>;
 
   deleteUser(user: AccountUser): Promise<AccountUser>;
 }

@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
-import { Roles } from '@/iam/login/decorators/roles.decorator';
-import { RolesGuard } from '@/iam/login/guards/roles/roles.guard';
-import { Role } from '@/iam/login/enums/roles.enum';
+import { Roles } from '@/iam/decorators/roles.decorator';
+import { RolesGuard } from '@/iam/guards/roles/roles.guard';
+import { Role } from '@/iam/enums/roles.enum';
 import { CatsService } from '@/protected/cats.service';
 import { CreateCatDto } from '@/protected/dto/create-cat.dto';
 

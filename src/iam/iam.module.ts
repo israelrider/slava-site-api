@@ -1,16 +1,20 @@
 import { Module } from '@nestjs/common';
 
-import { ChangePasswordModule } from './change-password/change-password.module';
-import { ForgotPasswordModule } from './forgot-password/forgot-password.module';
-import { LoginModule } from './login/login.module';
-import { RegisterModule } from './register/register.module';
+import { UsersModule } from '@/users/users.module';
+import { UtilsModule } from '@/common/utils/utils.module';
+import { IamController } from '@/iam/iam.controller';
+import { IamService } from '@/iam/iam.service';
 
 @Module({
   imports: [
-    LoginModule,
-    RegisterModule,
-    ForgotPasswordModule,
-    ChangePasswordModule,
+    UsersModule,
+    UtilsModule,
+  ],
+  controllers: [
+    IamController,
+  ],
+  providers: [
+    IamService,
   ],
 })
 export class IamModule {}

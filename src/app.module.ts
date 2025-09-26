@@ -4,10 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 
 import { IamModule } from '@/iam/iam.module';
-import { AuthenticationGuard } from '@/iam/login/guards/authentication/authentication.guard';
-import { AccessTokenGuard } from '@/iam/login/guards/access-token/access-token.guard';
-import { RolesGuard } from '@/iam/login/guards/roles/roles.guard';
-import { jwtConfig } from '@/iam/login/config/jwt.config';
+import { AuthenticationGuard } from '@/iam/guards/authentication/authentication.guard';
+import { AccessTokenGuard } from '@/iam/guards/access-token/access-token.guard';
+import { RolesGuard } from '@/iam/guards/roles/roles.guard';
+import { jwtConfig } from '@/iam/config/jwt.config';
 import { ProtectedModule } from '@/protected/protected.module';
 
 @Module({

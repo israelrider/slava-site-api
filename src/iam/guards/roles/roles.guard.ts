@@ -1,8 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ROLES_KEY } from '@/iam/login/decorators/roles.decorator';
-import { Role } from '@/iam/login/enums/roles.enum';
+import { ROLES_KEY } from '@/iam/decorators/roles.decorator';
+import { Role } from '@/iam/enums/roles.enum';
 import { FastifyRequest } from 'fastify';
 
 @Injectable()

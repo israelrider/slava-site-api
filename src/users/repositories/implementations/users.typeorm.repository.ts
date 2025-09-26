@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository, InsertResult, UpdateResult } from 'typeorm';
 
 import { User } from '@/users/models/user.model';
 import { UserProfileDto } from '@/users/dto/user-profile.dto';
@@ -20,12 +20,20 @@ export class UsersTypeOrmRepository implements UsersRepository {
   }
 
   public async findByEmail(email: string): Promise<AccountUser | null> {
+    if (!email || email.length === 0) {
+      throw new NotFoundException('Email Not Found');
+    }
+
     return await this.usersRepository.findOneBy({
       email: email,
     });
   }
 
   public async byEmailWithPassword(email: string): Promise<AccountUser | null> {
+    if (!email || email.length === 0) {
+      throw new NotFoundException('Email Not Found');
+    }
+
     return await this.usersRepository.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.email = :email', { email })
@@ -33,7 +41,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
   }
 
   public async findBySub(sub: number): Promise<AccountUser> {
-    if (!sub && sub !== 0) {
+    if (!sub) {
       throw new NotFoundException('Sub Not Found');
     }
 
@@ -42,49 +50,70 @@ export class UsersTypeOrmRepository implements UsersRepository {
     });
   }
 
-  public async findById(userId: string): Promise<AccountUser | null> {
+  public async findById(userId: number): Promise<AccountUser | null> {
+    if (!userId) {
+      throw new NotFoundException('User ID Not Found');
+    }
+
     return await this.usersRepository.findOneBy({
       id: +userId,
     });
   }
 
-  public async create(userDto: UserDto): Promise<AccountUser> {
-    return await this.usersRepository.save(userDto);
+  public async create(userDto: UserDto): Promise<InsertResult> {
+    return await this.usersRepository.insert(userDto);
   }
 
-  public async updateByEmail(email: string): Promise<AccountUser> {
-    const user = await this.usersRepository.findOneBy({ email: email });
-
-    user.password = await this.hashingService.hash(
-      Math.random().toString(36).slice(-8),
-    );
-
-    return await this.usersRepository.save(user);
-  }
-
-  public async updateByPassword(email: string, password: string): Promise<AccountUser> {
-    const user = await this.usersRepository.findOneBy({ email: email });
-    user.password = await this.hashingService.hash(password);
-
-    return await this.usersRepository.save(user);
-  }
-
-  public async updateUserProfile(id: string, userProfileDto: UserProfileDto): Promise<AccountUser> {
-    const user = await this.usersRepository.findOneBy({ id: +id });
-    user.name = userProfileDto.name;
-    user.email = userProfileDto.email;
-    user.role = userProfileDto.role;
-
-    return await this.usersRepository.save(user);
-  }
-
-  public async updateUser(id: string, userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
-    return await this.usersRepository.update(
+  public async updatePassword(email: string, password: string): Promise<UpdateResult> {
+    const newPassword: string = await this.hashingService.hash(password);
+    const updateResult: UpdateResult = await this.usersRepository.update(
       {
-        id: +id,
+        email,
       },
-      { ...userUpdateDto },
+      {
+        password: newPassword,
+      },
     );
+
+    if (updateResult.affected === 0) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return updateResult;
+  }
+
+  public async updateUserProfile(id: number, userProfileDto: UserProfileDto): Promise<UpdateResult> {
+    const updateResult: UpdateResult = await this.usersRepository.update(
+      {
+        id,
+      },
+      {
+        ...userProfileDto,
+      },
+    );
+
+    if (updateResult.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return updateResult;
+  }
+
+  public async updateUser(id: number, userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
+    const updateResult: UpdateResult = await this.usersRepository.update(
+      {
+        id,
+      },
+      {
+        ...userUpdateDto,
+      },
+    );
+
+    if (updateResult.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return updateResult;
   }
 
   public async deleteUser(user: AccountUser): Promise<AccountUser> {

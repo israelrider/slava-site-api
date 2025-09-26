@@ -1,4 +1,4 @@
-import { ChangePasswordDto } from '@/iam/change-password/dto/change-password.dto';
+import { ChangePasswordDto } from '@/iam/dto/change-password.dto';
 import { UserDto } from '@/users/dto/user.dto';
 
 export const registrationEmail = (user: UserDto) => {
@@ -25,12 +25,12 @@ export const forgotPasswordEmail = (password: string) => {
   `;
 };
 
-export const changePasswordEmail = (user: ChangePasswordDto) => {
+export const changePasswordEmail = (password: string) => {
   return `<html>
             <body>
               <div>
                 <p>Change Password Successfully! ✔ </p>
-                <p>this is your new password: ${user.password}</p>
+                <p>this is your new password: ${password}</p>
               </div>
             </body>
           </html>

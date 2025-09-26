@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { FastifyRequest } from 'fastify';
 
 import { TYPE_TOKEN_BEARER, ROLE, } from '@/iam/iam.constants';
-import { JWTPayload } from '@/iam/login/interfaces/jwt-payload.interface';
+import { JWTPayload } from '@/iam/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
