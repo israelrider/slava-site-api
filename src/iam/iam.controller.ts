@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { Controller, Post, Put, Body, HttpCode, Req, Res, BadRequestException, UnauthorizedException, Logger, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Patch, Body, HttpCode, Req, Res, BadRequestException, UnauthorizedException, Logger, HttpStatus, Param } from '@nestjs/common';
 import { ApiUnauthorizedResponse, ApiOkResponse, ApiTags, ApiBearerAuth, ApiOperation, ApiBadRequestResponse } from '@nestjs/swagger';
 import { TokenExpiredError } from '@nestjs/jwt';
 
@@ -14,6 +14,7 @@ import { AuthType } from '@/iam/enums/auth-type.enum';
 import { Auth } from '@/iam/decorators/auth.decorator';
 import { IamService } from '@/iam/iam.service';
 import { setCookieOptions } from '@/iam/utils';
+import { ChangeRoleDto } from '@/iam/dto/change-role.dto'
 
 @ApiTags('auth')
 @Auth(AuthType.None)
@@ -140,23 +141,23 @@ export class IamController {
     }
   }
 
-  @Put('change-role')
+  @Patch('/:userId/role')
   @HttpCode(200)
   @ApiOperation({ summary: 'Request Change Role' })
   @ApiOkResponse({
     description: 'Request Change Role',
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  public async changeRole(@Body() changePasswordDto: ChangePasswordDto): Promise<ChangePasswordResponse> {
+  public async changeRole(@Param('userId') userId: string, @Body() changeRoleDto: ChangeRoleDto): Promise<ChangePasswordResponse> {
     try {
-      await this.iamService.changePassword(changePasswordDto);
+      await this.iamService.changeRole(+userId, changeRoleDto);
 
       return {
-        message: 'Request Change Password Successfully!',
+        message: 'Request Change Role Successfully!',
         status: HttpStatus.OK,
       };
     } catch (err) {
-      throw new BadRequestException(err, 'Error: Change password failed!');
+      throw new BadRequestException(err, 'Error: Change role failed!');
     }
   }
 }

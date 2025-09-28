@@ -16,6 +16,9 @@ import { LoginDto } from '@/iam/dto/login.dto';
 import { RefreshTokenDto } from '@/iam/dto/refresh-token.dto';
 import { ChangePasswordDto } from '@/iam/dto/change-password.dto';
 import { ForgotPasswordDto } from '@/iam/dto/forgot-password.dto';
+import { ChangeRoleDto } from '@/iam/dto/change-role.dto'
+import { Role } from '@/iam/enums/roles.enum';
+import { toEnum } from '@/iam/utils';
 
 @Injectable()
 export class IamService {
@@ -46,8 +49,13 @@ export class IamService {
   }
 
   public async generateTokens(user: User): Promise<AuthResponse> {
+    const role = toEnum<Role>(Role, user.role);
+    if (!role) {
+      throw new UnauthorizedException('Invalid user role');
+    }
+
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { role: user.role }),
+      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { role }),
       this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400),
     ]);
 
@@ -58,7 +66,7 @@ export class IamService {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role,
       },
     };
   }
@@ -86,10 +94,17 @@ export class IamService {
 
   public async changePassword(changePasswordDto: ChangePasswordDto): Promise<UpdateResult> {
     this.sendMailChangePassword(changePasswordDto).catch(
-      (err: unknown) => Logger.error('Change Password: Send Mail Failed!', err)
+      (err: unknown) => Logger.error('Change Password: Send Mail Failed!', err),
     );
 
     return await this.usersService.updatePassword(changePasswordDto.email, changePasswordDto.password);
+  }
+
+  public async changeRole(userId: number, changeRoleDto: ChangeRoleDto): Promise<UpdateResult> {
+    const userUpdateDto = {
+      role: changeRoleDto.role,
+    };
+    return await this.usersService.updateUser(userId, userUpdateDto);
   }
 
   private async signToken<T>(userId: number, expiresIn: number, payload?: T): Promise<string> {
@@ -111,7 +126,7 @@ export class IamService {
         from: 'from@example.com',
         subject: 'Forgot Password successful ✔',
         text: 'Forgot Password successful!',
-        html: forgotPasswordEmail(user.password)
+        html: forgotPasswordEmail(user.password),
       });
       Logger.log('Forgot Password: Send Mail successfully!', 'MailService');
     } catch (err) {
@@ -126,7 +141,7 @@ export class IamService {
         from: 'from@example.com',
         subject: 'Change Password successful ✔',
         text: 'Change Password successful!',
-        html: changePasswordEmail(user.password)
+        html: changePasswordEmail(user.password),
       });
       Logger.log('Change Password: Send Mail successfully!', 'MailService');
     } catch (err: unknown) {

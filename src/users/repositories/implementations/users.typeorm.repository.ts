@@ -8,6 +8,7 @@ import { UserDto } from '@/users/dto/user.dto';
 import { HashingService } from '@/common/hashing/hashing.service';
 import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UsersRepository } from '@/users/interfaces/users.repository.interface';
+import { toAccountUser } from '@/iam/utils'
 
 export class UsersTypeOrmRepository implements UsersRepository {
   constructor(
@@ -16,7 +17,8 @@ export class UsersTypeOrmRepository implements UsersRepository {
   ) {}
 
   public async findAll(): Promise<AccountUser[]> {
-    return await this.usersRepository.find();
+    const users: User[] = await this.usersRepository.find();
+    return users.map((user: User) => toAccountUser(user));
   }
 
   public async findByEmail(email: string): Promise<AccountUser | null> {
@@ -24,9 +26,11 @@ export class UsersTypeOrmRepository implements UsersRepository {
       throw new NotFoundException('Email Not Found');
     }
 
-    return await this.usersRepository.findOneBy({
+    const user: User = await this.usersRepository.findOneBy({
       email: email,
     });
+
+    return toAccountUser(user);
   }
 
   public async byEmailWithPassword(email: string): Promise<AccountUser | null> {
@@ -34,10 +38,12 @@ export class UsersTypeOrmRepository implements UsersRepository {
       throw new NotFoundException('Email Not Found');
     }
 
-    return await this.usersRepository.createQueryBuilder('user')
+    const user: User = await this.usersRepository.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.email = :email', { email })
       .getOne();
+
+    return toAccountUser(user);
   }
 
   public async findBySub(sub: number): Promise<AccountUser> {
@@ -45,9 +51,11 @@ export class UsersTypeOrmRepository implements UsersRepository {
       throw new NotFoundException('Sub Not Found');
     }
 
-    return await this.usersRepository.findOneByOrFail({
+    const user: User = await this.usersRepository.findOneByOrFail({
       id: sub,
     });
+
+    return toAccountUser(user);
   }
 
   public async findById(userId: number): Promise<AccountUser | null> {
@@ -55,9 +63,11 @@ export class UsersTypeOrmRepository implements UsersRepository {
       throw new NotFoundException('User ID Not Found');
     }
 
-    return await this.usersRepository.findOneBy({
+    const user: User = await this.usersRepository.findOneBy({
       id: +userId,
     });
+
+    return toAccountUser(user);
   }
 
   public async create(userDto: UserDto): Promise<InsertResult> {
@@ -117,6 +127,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
   }
 
   public async deleteUser(user: AccountUser): Promise<AccountUser> {
-    return await this.usersRepository.remove(user);
+    const removedUser: User = await this.usersRepository.remove(user);
+    return toAccountUser(removedUser);
   }
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { MailerModule } from '@/common/mailer/mailer.module';
+import { MailerService } from '@/common/mailer/mailer.service'
 import { Argon2Service } from '@/common/hashing/argon2.service';
 import { HashingService } from '@/common/hashing/hashing.service';
 import { User } from '@/users/models/user.model';
@@ -12,10 +12,10 @@ import { UsersController } from '@/users/users.controller';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    MailerModule,
   ],
   controllers: [UsersController],
   providers: [
+    MailerService,
     {
       provide: HashingService,
       useClass: Argon2Service,
@@ -24,6 +24,7 @@ import { UsersController } from '@/users/users.controller';
     ...provideUsersRepository(),
   ],
   exports: [
+    MailerService,
     {
       provide: HashingService,
       useClass: Argon2Service,

@@ -3,17 +3,18 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiNoContentResponse, ApiNotFound
 
 import { Auth } from '@/iam/decorators/auth.decorator';
 import { AuthType } from '@/iam/enums/auth-type.enum';
+import { RegisterUserDto } from '@/iam/dto/register-user.dto';
+import { RegisterResponse } from '@/iam/interfaces/register-response.interface';
+import { Role } from '@/iam/enums/roles.enum';
 
-import { UsersService } from './users.service';
-import { UserProfileDto } from './dto/user-profile.dto';
-import { UserUpdateDto } from './dto/user-update.dto';
-import { AccountUser } from './interfaces/account-user.interface';
-import { GetUserResponse } from './interfaces/get-user-response.interface';
-import { UpdateResponse } from './interfaces/update-response.interface';
-import { RegisterUserDto } from '@/iam/dto/register-user.dto'
-import { RegisterResponse } from '@/iam/interfaces/register-response.interface'
-import { UserDto } from '@/users/dto/user.dto'
-import { Role } from '@/iam/enums/roles.enum'
+import { UsersService } from '@/users/users.service';
+import { UserProfileDto } from '@/users/dto/user-profile.dto';
+import { UserUpdateDto } from '@/users/dto/user-update.dto';
+import { UserDto } from '@/users/dto/user.dto';
+import { AccountUser } from '@/users/interfaces/account-user.interface';
+import { GetUserResponse } from '@/users/interfaces/get-user-response.interface';
+import { UpdateResponse } from '@/users/interfaces/update-response.interface';
+import { AllUsersResponse } from '@/users/interfaces/all-users-response.interface';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -25,8 +26,13 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'Get all users' })
-  public async findAllUsers(): Promise<AccountUser[]> {
-    return this.usersService.findAll();
+  public async findAllUsers(): Promise<AllUsersResponse> {
+    const users: AccountUser[] = await this.usersService.findAll();
+    return {
+      users,
+      roles: Object.values(Role),
+      status: HttpStatus.OK,
+    };
   }
 
   @Get('/:userId/profile')
@@ -91,7 +97,7 @@ export class UsersController {
     try {
       const userDto: UserDto = {
         ...registerUserDto,
-        role: Role.Reader,
+        role: Role.Customer,
       };
       await this.usersService.register(userDto);
 

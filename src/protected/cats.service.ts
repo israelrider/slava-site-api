@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { fetchWeatherApi } from 'openmeteo';
 
-import { Cat } from './interfaces/cat.interface';
+import { Cat } from '@/protected/interfaces/cat.interface';
+import { GeolocationDto } from '@/protected/dto/geolocation.dto'
 
 @Injectable()
 export class CatsService {
@@ -15,10 +16,11 @@ export class CatsService {
     return this.cats;
   }
 
-  async xyu(): Promise<any[]> {
+  async xyu(geolocation: GeolocationDto): Promise<any[]> {
+    console.log(geolocation);
     const params = {
-      latitude: [52.54],
-      longitude: [13.41],
+      latitude: [geolocation.latitude],
+      longitude: [geolocation.longitude],
       current: 'temperature_2m,weather_code,wind_speed_10m,wind_direction_10m',
       hourly: 'temperature_2m,precipitation',
       daily: 'weather_code,temperature_2m_max,temperature_2m_min',

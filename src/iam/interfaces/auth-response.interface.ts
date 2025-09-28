@@ -1,3 +1,5 @@
+import { Role } from '@/iam/enums/roles.enum'
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -5,6 +7,6 @@ export interface AuthResponse {
     id: number;
     name: string;
     email: string;
-    role: string;
+    role: Role;
   };
 }
