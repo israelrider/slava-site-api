@@ -44,6 +44,9 @@ importers:
       '@nestjs/typeorm':
         specifier: ^11.0.0
         version: 11.0.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.26(mysql2@3.14.4)(reflect-metadata@0.2.2)(ts-node@10.9.2(@types/node@24.3.1)(typescript@5.9.2)))
+      '@openmeteo/sdk':
+        specifier: ^1.21.2
+        version: 1.21.2
       ajv:
         specifier: ^8.17.1
         version: 8.17.1
@@ -1063,8 +1066,8 @@ packages:
     engines: {node: ^14.18.0 || >=16.10.0, npm: '>=5.10.0'}
     hasBin: true
 
-  '@openmeteo/sdk@1.20.1':
-    resolution: {integrity: sha512-o5tw3+N617Ms8nDm649PWwWt6PDz8NHWBLjOOFB8bx/EJpvsvKEeHMMoapxQ71bjHzQM+4h39eCe6/nM+nBuwg==}
+  '@openmeteo/sdk@1.21.2':
+    resolution: {integrity: sha512-AaX53PfPMVAaxdvuthRJePLD46eGYoaGQMEW5A0/xuAjigTQncN4WOhrXlOvg8aG8zfQQVUmhKFDHB/+UCUVoQ==}
     engines: {node: '>=12.0'}
 
   '@paralleldrive/cuid2@2.2.2':
@@ -5259,7 +5262,7 @@ snapshots:
     dependencies:
       consola: 3.4.2
 
-  '@openmeteo/sdk@1.20.1':
+  '@openmeteo/sdk@1.21.2':
     dependencies:
       flatbuffers: 25.2.10
 
@@ -7551,7 +7554,7 @@ snapshots:
 
   openmeteo@1.2.0:
     dependencies:
-      '@openmeteo/sdk': 1.20.1
+      '@openmeteo/sdk': 1.21.2
       flatbuffers: 25.2.10
 
   optionator@0.9.4:
