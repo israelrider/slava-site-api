@@ -9,6 +9,7 @@ import { AccessTokenGuard } from '@/iam/guards/access-token/access-token.guard';
 import { RolesGuard } from '@/iam/guards/roles/roles.guard';
 import { jwtConfig } from '@/iam/config/jwt.config';
 import { WeatherModule } from '@/weather/weather.module';
+import { AskFromModule } from '@/ask-from/askFrom.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { WeatherModule } from '@/weather/weather.module';
     }),
     IamModule,
     WeatherModule,
+    AskFromModule,
   ],
   providers: [
     {

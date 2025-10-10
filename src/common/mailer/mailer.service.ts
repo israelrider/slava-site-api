@@ -19,7 +19,7 @@ export class MailerService {
     });
   }
 
-  sendMail(options: SendMailOptions) {
+  public sendMail(options: SendMailOptions) {
     return this.nodemailerTransport.sendMail(options);
   }
 }

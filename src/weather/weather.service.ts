@@ -7,7 +7,7 @@ import { GeolocationDto } from '@/weather/dto/geolocation.dto'
 
 @Injectable()
 export class WeatherService {
-  async tableData(geolocation: GeolocationDto): Promise<any[]> {
+  public async tableData(geolocation: GeolocationDto): Promise<any[]> {
     // console.log(geolocation);
     const params = {
       latitude: [geolocation.latitude],
@@ -60,7 +60,7 @@ export class WeatherService {
     return result;
   }
 
-  async chartData(geolocation: GeolocationDto): Promise<any> {
+  public async chartData(geolocation: GeolocationDto): Promise<any> {
     // console.log(geolocation);
     const params = {
       latitude: [geolocation.latitude],

@@ -5,8 +5,6 @@ import { WeatherService } from '@/weather/weather.service';
 
 @Module({
   controllers: [WeatherController],
-  providers: [
-    WeatherService,
-  ],
+  providers: [WeatherService],
 })
 export class WeatherModule {}
