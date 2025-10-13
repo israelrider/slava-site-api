@@ -10,6 +10,7 @@ import { RolesGuard } from '@/iam/guards/roles/roles.guard';
 import { jwtConfig } from '@/iam/config/jwt.config';
 import { WeatherModule } from '@/weather/weather.module';
 import { AskFromModule } from '@/ask-from/askFrom.module';
+import { AstrologyModule } from '@/astrology/astrology.module'
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AskFromModule } from '@/ask-from/askFrom.module';
     IamModule,
     WeatherModule,
     AskFromModule,
+    AstrologyModule,
   ],
   providers: [
     {
