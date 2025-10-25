@@ -11,6 +11,7 @@ import { jwtConfig } from '@/iam/config/jwt.config';
 import { WeatherModule } from '@/weather/weather.module';
 import { AskFromModule } from '@/ask-from/askFrom.module';
 import { AstrologyModule } from '@/astrology/astrology.module'
+import { DiaryModule } from '@/diary/diary.module';
 
 @Module({
   imports: [
@@ -44,7 +45,9 @@ import { AstrologyModule } from '@/astrology/astrology.module'
     WeatherModule,
     AskFromModule,
     AstrologyModule,
+    DiaryModule,
   ],
+  // Apply guards globally, to each incoming request.
   providers: [
     {
       provide: APP_GUARD,
@@ -52,7 +55,6 @@ import { AstrologyModule } from '@/astrology/astrology.module'
     },
     AccessTokenGuard,
     RolesGuard,
-
   ],
 })
 export class AppModule {}

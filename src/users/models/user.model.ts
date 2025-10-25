@@ -36,4 +36,13 @@ export class User {
   // This column will be automatically updated on every save.
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // TODO: Uncomment cascade relation when Diary module is ready.
+  /*
+  @OneToOne(() => Diary, (diary: Diary) => diary.user, {
+    // Ensures TypeORM saves/updates related entity.
+    cascade: ['remove'],
+  })
+  diary: Diary;
+  */
 }

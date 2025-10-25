@@ -1,7 +1,6 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 import { Roles } from '@/iam/decorators/roles.decorator';
-import { RolesGuard } from '@/iam/guards/roles/roles.guard';
 import { Role } from '@/iam/enums/roles.enum';
 import { AstrologyService } from '@/astrology/astrology.service';
 import { ApiBearerAuth } from '@nestjs/swagger'
