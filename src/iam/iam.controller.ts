@@ -13,7 +13,7 @@ import { RefreshTokenDto } from '@/iam/dto/refresh-token.dto';
 import { AuthType } from '@/iam/enums/auth-type.enum';
 import { Auth } from '@/iam/decorators/auth.decorator';
 import { IamService } from '@/iam/iam.service';
-import { setCookieOptions } from '@/iam/utils';
+import { setCookieOptions } from '@/iam/iam.constants';
 import { ChangeRoleDto } from '@/iam/dto/change-role.dto'
 
 @ApiTags('auth')

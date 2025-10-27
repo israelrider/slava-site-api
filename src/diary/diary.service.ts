@@ -4,8 +4,8 @@ import { UpdateResult } from 'typeorm';
 import { DIARY_REPOSITORY_TOKEN } from '@/diary/interfaces/diary.repository.interface';
 import { DiaryTypeOrmRepository } from '@/diary/repositories/implementations/diary.typeorm.repository';
 import { Diary } from '@/diary/models/diary.model';
-import { CompatibilityDto } from '@/diary/dto/compatibility.dto'
-import { DiaryDataDto } from '@/diary/dto/diary-data.dto'
+import { CompatibilityDto } from '@/diary/dto/compatibility.dto';
+import { DiaryDataDto } from '@/diary/dto/diary-data.dto';
 
 @Injectable()
 export class DiaryService {
@@ -14,7 +14,7 @@ export class DiaryService {
     private readonly diaryRepository: DiaryTypeOrmRepository,
   ) {}
 
-  public async findDiaryByUserId(userId: number): Promise<object | null> {
+  public async findDiaryByUserId(userId: number): Promise<DiaryDataDto | null> {
     const diary: Diary | null = await this.diaryRepository.findDiaryByUserId(userId);
     return diary?.data;
   }

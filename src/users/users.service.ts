@@ -1,15 +1,17 @@
 import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InsertResult, UpdateResult } from 'typeorm';
 
-import { AccountUser } from './interfaces/account-user.interface';
-import { USERS_REPOSITORY_TOKEN } from './interfaces/users.repository.interface';
-import { UserDto } from './dto/user.dto';
-import { UserProfileDto } from './dto/user-profile.dto';
-import { UserUpdateDto } from './dto/user-update.dto';
-import { UsersTypeOrmRepository } from './repositories/implementations/users.typeorm.repository';
 import { registrationEmail } from '@/common/mailer/mailer.constants'
-import { HashingService } from '@/common/hashing/hashing.service'
-import { MailerService } from '@/common/mailer/mailer.service'
+import { HashingService } from '@/common/hashing/hashing.service';
+import { MailerService } from '@/common/mailer/mailer.service';
+import { UtilsService } from '@/common/utils/utils.service';
+import { AccountUser } from '@/users/interfaces/account-user.interface';
+import { USERS_REPOSITORY_TOKEN } from '@/users/interfaces/users.repository.interface';
+import { UserDto } from '@/users/dto/user.dto';
+import { UserProfileDto } from '@/users/dto/user-profile.dto';
+import { UserUpdateDto } from '@/users/dto/user-update.dto';
+import { UsersTypeOrmRepository } from '@/users/repositories/implementations/users.typeorm.repository';
+import { User } from '@/users/models/user.model';
 
 @Injectable()
 export class UsersService {
@@ -18,28 +20,32 @@ export class UsersService {
     private readonly usersRepository: UsersTypeOrmRepository,
     private readonly hashingService: HashingService,
     private readonly mailerService: MailerService,
+    private readonly utilsService: UtilsService
   ) {}
 
   public async findAll(): Promise<AccountUser[]> {
-    return await this.usersRepository.findAll();
+    const users: User[] = await this.usersRepository.findAll();
+    return users.map((user: User) => this.utilsService.toAccountUser(user));
   }
 
   public async byEmailWithPassword(email: string): Promise<AccountUser> {
-    return await this.usersRepository.byEmailWithPassword(email);
+    const user: User | null = await this.usersRepository.byEmailWithPassword(email);
+    return this.utilsService.toAccountUser(user);
   }
 
   public async findBySub(sub: number): Promise<AccountUser> {
-    return await this.usersRepository.findBySub(sub);
+    const user: User = await this.usersRepository.findBySub(sub);
+    return this.utilsService.toAccountUser(user);
   }
 
   public async findById(userId: number): Promise<AccountUser> {
-    const user: AccountUser | null = await this.usersRepository.findById(userId);
+    const user: User | null = await this.usersRepository.findById(userId);
 
     if (!user) {
       throw new NotFoundException(`User #${userId} not found`);
     }
 
-    return user;
+    return this.utilsService.toAccountUser(user);
   }
 
   public async updatePassword(email: string, password: string): Promise<UpdateResult> {
@@ -80,8 +86,9 @@ export class UsersService {
   }
 
   public async deleteUser(id: number): Promise<AccountUser> {
-    const user: AccountUser = await this.findById(id);
-    return await this.usersRepository.deleteUser(user);
+    const accountUser: AccountUser = await this.findById(id);
+    const user: User = await this.usersRepository.deleteUser(accountUser);
+    return this.utilsService.toAccountUser(user);
   }
 
   private async sendMailRegisterUser(user: UserDto): Promise<void> {

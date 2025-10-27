@@ -2,12 +2,10 @@ import { Repository, UpdateResult } from 'typeorm';
 
 import { Diary } from '@/diary/models/diary.model';
 import { DiaryRepository } from '@/diary/interfaces/diary.repository.interface';
-import { DiaryDataDto } from '@/diary/dto/diary-data.dto'
+import { DiaryDataDto } from '@/diary/dto/diary-data.dto';
 
 export class DiaryTypeOrmRepository implements DiaryRepository {
-  constructor(
-    private readonly diaryRepository: Repository<Diary>,
-  ) {}
+  constructor(private readonly diaryRepository: Repository<Diary>) {}
 
   public async findDiaryByUserId(userId: number): Promise<Diary | null> {
     return await this.diaryRepository.findOne(

@@ -18,7 +18,6 @@ import { ChangePasswordDto } from '@/iam/dto/change-password.dto';
 import { ForgotPasswordDto } from '@/iam/dto/forgot-password.dto';
 import { ChangeRoleDto } from '@/iam/dto/change-role.dto'
 import { Role } from '@/iam/enums/roles.enum';
-import { toEnum } from '@/iam/utils';
 
 @Injectable()
 export class IamService {
@@ -49,7 +48,7 @@ export class IamService {
   }
 
   public async generateTokens(user: User): Promise<AuthResponse> {
-    const role = toEnum<Role>(Role, user.role);
+    const role = this.utilsService.toEnum<Role>(Role, user.role);
     if (!role) {
       throw new UnauthorizedException('Invalid user role');
     }

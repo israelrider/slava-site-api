@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 
 import { User } from '@/users/models/user.model';
+import { DiaryDataDto } from '@/diary/dto/diary-data.dto';
 
 // Table name will be "diary"
 @Entity('diary')
@@ -14,7 +15,7 @@ export class Diary {
     type: 'json',
     nullable: true,
   })
-  data: object;
+  data: DiaryDataDto | null;
 
   // This column will be automatically set on creation.
   @CreateDateColumn()

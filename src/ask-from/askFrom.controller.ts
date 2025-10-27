@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 
 import { Roles } from '@/iam/decorators/roles.decorator';
-import { RolesGuard } from '@/iam/guards/roles/roles.guard';
+import { RolesGuard } from '@/iam/guards/roles.guard';
 import { Role } from '@/iam/enums/roles.enum';
 import { AskFromService } from '@/ask-from/askFrom.service'
 import { ApiBearerAuth } from '@nestjs/swagger'

@@ -4,13 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 
 import { IamModule } from '@/iam/iam.module';
-import { AuthenticationGuard } from '@/iam/guards/authentication/authentication.guard';
-import { AccessTokenGuard } from '@/iam/guards/access-token/access-token.guard';
-import { RolesGuard } from '@/iam/guards/roles/roles.guard';
+import { AuthenticationGuard } from '@/iam/guards/authentication.guard';
+import { AccessTokenGuard } from '@/iam/guards/access-token.guard';
+import { RolesGuard } from '@/iam/guards/roles.guard';
 import { jwtConfig } from '@/iam/config/jwt.config';
+import { UtilsModule } from '@/common/utils/utils.module';
 import { WeatherModule } from '@/weather/weather.module';
 import { AskFromModule } from '@/ask-from/askFrom.module';
-import { AstrologyModule } from '@/astrology/astrology.module'
+import { AstrologyModule } from '@/astrology/astrology.module';
 import { DiaryModule } from '@/diary/diary.module';
 
 @Module({
@@ -41,6 +42,7 @@ import { DiaryModule } from '@/diary/diary.module';
         issuer: jwtConfig.issuer,
       }),
     }),
+    UtilsModule,
     IamModule,
     WeatherModule,
     AskFromModule,

@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { fetchWeatherApi } from 'openmeteo';
 import { VariablesWithTime } from '@openmeteo/sdk/variables-with-time';
-import { WeatherApiResponse } from '@openmeteo/sdk/weather-api-response'
+import { WeatherApiResponse } from '@openmeteo/sdk/weather-api-response';
 
-import { GeolocationDto } from '@/weather/dto/geolocation.dto'
+import { GeolocationDto } from '@/weather/dto/geolocation.dto';
+import { TableDataResponse } from '@/weather/interfaces/table-data-response.interface'
+import { ChartDataResponse } from '@/weather/interfaces/chart-data-response.interface'
 
 @Injectable()
 export class WeatherService {
-  public async tableData(geolocation: GeolocationDto): Promise<any[]> {
-    // console.log(geolocation);
+  public async tableData(geolocation: GeolocationDto): Promise<TableDataResponse[]> {
     const params = {
       latitude: [geolocation.latitude],
       longitude: [geolocation.longitude],
@@ -26,7 +27,7 @@ export class WeatherService {
     const responses: WeatherApiResponse[] = await fetchWeatherApi(url, params);
     // Process first location.
     // Add a for-loop for multiple locations or weather models.
-    const response = responses[0];
+    const response: WeatherApiResponse = responses[0];
 
     // Attributes for timezone and location.
     const utcOffsetSeconds: number = response.utcOffsetSeconds();
@@ -46,7 +47,7 @@ export class WeatherService {
     };
 
     const result: any[] = [];
-    for (let i = 0; i < weatherData.daily.time.length; i++) {
+    for (let i: number = 0; i < weatherData.daily.time.length; i++) {
       result.push({
         time: weatherData.daily.time[i].toISOString(),
         weatherCode: weatherData.daily.weatherCode[i],
@@ -60,7 +61,7 @@ export class WeatherService {
     return result;
   }
 
-  public async chartData(geolocation: GeolocationDto): Promise<any> {
+  public async chartData(geolocation: GeolocationDto): Promise<ChartDataResponse> {
     // console.log(geolocation);
     const params = {
       latitude: [geolocation.latitude],

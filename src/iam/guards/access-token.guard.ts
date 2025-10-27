@@ -13,7 +13,7 @@ export class AccessTokenGuard implements CanActivate {
     const request: FastifyRequest = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      Logger.log(`No token found in ${request.method} request ${request.url}`, 'AccessTokenGuard');
+      Logger.warn(`No token found in ${request.method} request ${request.url}`, 'AccessTokenGuard');
       throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, 'No token');
     }
 
@@ -24,7 +24,7 @@ export class AccessTokenGuard implements CanActivate {
       request.headers.id = payload?.id.toString();
     } catch (err) {
       Logger.error('Error verifying token', err);
-      throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, err);
+      throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, 'Invalid token');
     }
 
     return true;

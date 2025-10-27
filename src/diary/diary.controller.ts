@@ -8,7 +8,8 @@ import { AuthType } from '@/iam/enums/auth-type.enum';
 import { Roles } from '@/iam/decorators/roles.decorator';
 import { Role } from '@/iam/enums/roles.enum';
 import { DiaryService } from '@/diary/diary.service';
-import { CompatibilityDto } from '@/diary/dto/compatibility.dto'
+import { CompatibilityDto } from '@/diary/dto/compatibility.dto';
+import { DiaryDataDto } from '@/diary/dto/diary-data.dto';
 
 @ApiTags('diary')
 @ApiBearerAuth()
@@ -21,7 +22,7 @@ export class DiaryController {
   @Roles(Role.Customer)
   @ApiOperation({ summary: 'Get user diary' })
   @ApiResponse({ status: 200, description: 'Get user diary' })
-  public async getUserDiary(@Req() request: FastifyRequest): Promise<object | null> {
+  public async getUserDiary(@Req() request: FastifyRequest): Promise<DiaryDataDto | null> {
     const userId: string = request.headers.id as string;
     return await this.diarySevice.findDiaryByUserId(+userId);
   }

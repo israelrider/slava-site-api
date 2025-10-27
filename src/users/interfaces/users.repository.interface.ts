@@ -4,17 +4,18 @@ import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UserProfileDto } from 'src/users/dto/user-profile.dto';
 import { UserUpdateDto } from 'src/users/dto/user-update.dto';
 import { UserDto } from 'src/users/dto/user.dto';
+import { User } from '@/users/models/user.model';
 
 export interface UsersRepository {
-  findAll(): Promise<AccountUser[]>;
+  findAll(): Promise<User[]>;
 
-  findByEmail(email: string): Promise<AccountUser | null>;
+  findByEmail(email: string): Promise<User | null>;
 
-  byEmailWithPassword(email: string): Promise<AccountUser | null>;
+  byEmailWithPassword(email: string): Promise<User | null>;
 
-  findBySub(sub: number): Promise<AccountUser>;
+  findBySub(sub: number): Promise<User>;
 
-  findById(userId: number): Promise<AccountUser | null>;
+  findById(userId: number): Promise<User | null>;
 
   create(userDto: UserDto): Promise<InsertResult>;
 
@@ -24,7 +25,7 @@ export interface UsersRepository {
 
   updateUser(id: number, userUpdateDto: UserUpdateDto): Promise<UpdateResult>;
 
-  deleteUser(user: AccountUser): Promise<AccountUser>;
+  deleteUser(user: AccountUser): Promise<User>;
 }
 
 // @ts-ignore
