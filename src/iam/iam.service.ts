@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateResult } from 'typeorm';
 
@@ -78,32 +78,44 @@ export class IamService {
   }
 
   public async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<UpdateResult> {
-    const password: string = this.utilsService.generatePassword();
-    const changePasswordDto: ChangePasswordDto = {
-      email: forgotPasswordDto.email,
-      password,
-    };
+    try {
+      const password: string = this.utilsService.generatePassword();
+      const changePasswordDto: ChangePasswordDto = {
+        email: forgotPasswordDto.email,
+        password,
+      };
 
-    this.sendMailForgotPassword(changePasswordDto).catch(
-      (err: unknown) => Logger.error('Forgot Password: Send Mail Failed', err),
-    );
+      this.sendMailForgotPassword(changePasswordDto).catch(
+        (err: unknown) => Logger.error('Forgot Password: Send Mail Failed', err),
+      );
 
-    return await this.usersService.updatePassword(changePasswordDto.email, changePasswordDto.password);
+      return await this.usersService.updatePassword(changePasswordDto.email, changePasswordDto.password);
+    } catch (err) {
+      throw new BadRequestException(err, 'Error: Forgot password failed!');
+    }
   }
 
   public async changePassword(changePasswordDto: ChangePasswordDto): Promise<UpdateResult> {
-    this.sendMailChangePassword(changePasswordDto).catch(
-      (err: unknown) => Logger.error('Change Password: Send Mail Failed!', err),
-    );
+    try {
+      this.sendMailChangePassword(changePasswordDto).catch(
+        (err: unknown) => Logger.error('Change Password: Send Mail Failed!', err),
+      );
 
-    return await this.usersService.updatePassword(changePasswordDto.email, changePasswordDto.password);
+      return await this.usersService.updatePassword(changePasswordDto.email, changePasswordDto.password);
+    } catch (err) {
+      throw new BadRequestException(err, 'Error: Change password failed!');
+    }
   }
 
   public async changeRole(userId: number, changeRoleDto: ChangeRoleDto): Promise<UpdateResult> {
-    const userUpdateDto = {
-      role: changeRoleDto.role,
-    };
-    return await this.usersService.updateUser(userId, userUpdateDto);
+    try {
+      const userUpdateDto = {
+        role: changeRoleDto.role,
+      };
+      return await this.usersService.updateUser(userId, userUpdateDto);
+    } catch (err) {
+      throw new BadRequestException(err, 'Error: Change role failed!');
+    }
   }
 
   private async signToken<T>(userId: number, expiresIn: number, payload?: T): Promise<string> {

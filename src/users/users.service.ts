@@ -20,7 +20,7 @@ export class UsersService {
     private readonly usersRepository: UsersTypeOrmRepository,
     private readonly hashingService: HashingService,
     private readonly mailerService: MailerService,
-    private readonly utilsService: UtilsService
+    private readonly utilsService: UtilsService,
   ) {}
 
   public async findAll(): Promise<AccountUser[]> {
@@ -73,14 +73,15 @@ export class UsersService {
   }
 
   public async register(userDto: UserDto): Promise<InsertResult> {
-    userDto.password = await this.hashingService.hash(userDto.password);
-
-    this.sendMailRegisterUser(userDto)
-      .catch((err: unknown) => Logger.error('Send mail failed but continuing registration', err));
-
     try {
+      userDto.password = await this.hashingService.hash(userDto.password);
+
+      this.sendMailRegisterUser(userDto)
+        .catch((err: unknown) => Logger.error('Send mail failed but continuing registration', err));
+
       return await this.usersRepository.create(userDto);
     } catch (err) {
+      Logger.error('User registration failed!', err);
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }

@@ -11,7 +11,7 @@ export class AccessTokenGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: FastifyRequest = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const token: string | undefined = this.extractTokenFromHeader(request);
     if (!token) {
       Logger.warn(`No token found in ${request.method} request ${request.url}`, 'AccessTokenGuard');
       throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, 'No token');
@@ -19,7 +19,7 @@ export class AccessTokenGuard implements CanActivate {
 
     try {
       const payload: JWTPayload = await this.jwtService.verifyAsync(token);
-      // Pass user roles to the next roles guard.
+      // Pass user role and id to request headers for further use.
       request.headers.role = payload?.role;
       request.headers.id = payload?.id.toString();
     } catch (err) {

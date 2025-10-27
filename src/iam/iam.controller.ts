@@ -1,6 +1,6 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
 import { Controller, Post, Patch, Body, HttpCode, Req, Res, BadRequestException, UnauthorizedException, Logger, HttpStatus, Param } from '@nestjs/common';
 import { ApiUnauthorizedResponse, ApiOkResponse, ApiTags, ApiBearerAuth, ApiOperation, ApiBadRequestResponse } from '@nestjs/swagger';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { TokenExpiredError } from '@nestjs/jwt';
 
 import { ChangePasswordResponse } from '@/iam/interfaces/change-password-response.interface';
@@ -15,23 +15,21 @@ import { Auth } from '@/iam/decorators/auth.decorator';
 import { IamService } from '@/iam/iam.service';
 import { setCookieOptions } from '@/iam/iam.constants';
 import { ChangeRoleDto } from '@/iam/dto/change-role.dto'
+import { Roles } from '@/iam/decorators/roles.decorator'
+import { Role } from '@/iam/enums/roles.enum'
 
-@ApiTags('auth')
 @Auth(AuthType.None)
+@ApiBearerAuth()
+@ApiTags('auth')
 @Controller('auth')
 export class IamController {
   constructor(private readonly iamService: IamService) {}
 
   @Post('login')
-  @HttpCode(200)
   @ApiOperation({ summary: 'Login a user' })
-  @ApiOkResponse({
-    description: 'Authentication a user with email and password credentials and return token',
-  })
-  @ApiUnauthorizedResponse({ description: 'Forbidden' })
+  @ApiOkResponse({ description: 'Authentication a user with email and password credentials and return token.' })
   public async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: FastifyReply): Promise<AuthResponse> {
     const result: AuthResponse = await this.iamService.login(loginDto);
-
     // Set HttpOnly cookie
     response.setCookie('refreshToken', result.refreshToken, setCookieOptions);
 
@@ -43,11 +41,8 @@ export class IamController {
   }
 
   @Post('logout')
-  @HttpCode(200)
   @ApiOperation({ summary: 'Logout a user' })
-  @ApiOkResponse({
-    description: 'Logout Implementation',
-  })
+  @ApiOkResponse({ description: 'Logout Implementation' })
   public logout(@Res({ passthrough: true }) response: FastifyReply): { message: string } {
     // Clear HttpOnly cookie.
     response.clearCookie('refreshToken', setCookieOptions);
@@ -60,15 +55,12 @@ export class IamController {
   @Post('refresh-tokens')
   @HttpCode(200)
   @ApiOperation({ summary: 'Refresh tokens' })
-  @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Refresh tokens and return new tokens',
-  })
+  @ApiOkResponse({ description: 'Refresh tokens and return new tokens' })
   @ApiUnauthorizedResponse({ description: 'Forbidden' })
   public async refreshTokens(@Req() request: FastifyRequest, @Res({ passthrough: true }) response: FastifyReply): Promise<AuthResponse> {
     const refreshToken = request.cookies.refreshToken;
     if (!refreshToken || !refreshToken.length) {
-      throw new BadRequestException('The refreshToken had not been found..');
+      throw new BadRequestException('The refreshToken had not been found.');
     }
 
     const refreshTokenDto = new RefreshTokenDto();
@@ -104,23 +96,17 @@ export class IamController {
   @Post('forgot-password')
   @HttpCode(200)
   @ApiOperation({ summary: 'Request Reset Password' })
-  @ApiOkResponse({
-    description: 'Request Reset Password and send a confirmation email to the user',
-  })
+  @ApiOkResponse({ description: 'Request Reset Password and send a confirmation email to the user' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   public async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<ForgotPasswordResponse> {
-    try {
-      await this.iamService.forgotPassword(forgotPasswordDto);
+    await this.iamService.forgotPassword(forgotPasswordDto);
 
-      return {
-        message: 'Request Reset Password Successfully!',
-        status: HttpStatus.OK,
-      };
-    } catch (err) {
-      throw new BadRequestException(err, 'Error: Forgot password failed!');
-    }
+    return {
+      message: 'Request Reset Password Successfully!',
+    };
   }
 
+  @Auth(AuthType.Bearer)
   @Post('change-password')
   @HttpCode(200)
   @ApiOperation({ summary: 'Request Change Password' })
@@ -129,35 +115,26 @@ export class IamController {
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
   public async changePassword(@Body() changePasswordDto: ChangePasswordDto): Promise<ChangePasswordResponse> {
-    try {
-      await this.iamService.changePassword(changePasswordDto);
+    await this.iamService.changePassword(changePasswordDto);
 
-      return {
-        message: 'Request Change Password Successfully!',
-        status: HttpStatus.OK,
-      };
-    } catch (err) {
-      throw new BadRequestException(err, 'Error: Change password failed!');
-    }
+    return {
+      message: 'Request Change Password Successfully!',
+    };
   }
 
+  @Auth(AuthType.Bearer)
+  @Roles(Role.Admin)
   @Patch('/:userId/role')
   @HttpCode(200)
   @ApiOperation({ summary: 'Request Change Role' })
-  @ApiOkResponse({
-    description: 'Request Change Role',
-  })
+  @ApiOkResponse({ description: 'User role changed successfully' })
   @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiUnauthorizedResponse({ description: 'Forbidden' })
   public async changeRole(@Param('userId') userId: string, @Body() changeRoleDto: ChangeRoleDto): Promise<ChangePasswordResponse> {
-    try {
       await this.iamService.changeRole(+userId, changeRoleDto);
 
       return {
         message: 'Request Change Role Successfully!',
-        status: HttpStatus.OK,
       };
-    } catch (err) {
-      throw new BadRequestException(err, 'Error: Change role failed!');
-    }
   }
 }

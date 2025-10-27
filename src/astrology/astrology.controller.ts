@@ -1,21 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Roles } from '@/iam/decorators/roles.decorator';
-import { Role } from '@/iam/enums/roles.enum';
 import { AstrologyService } from '@/astrology/astrology.service';
-import { ApiBearerAuth } from '@nestjs/swagger'
-import { Auth } from '@/iam/decorators/auth.decorator'
-import { AuthType } from '@/iam/enums/auth-type.enum'
 
-//@UseGuards(RolesGuard)
+@ApiBearerAuth()
+@ApiTags('astrology')
 @Controller('astrology')
 export class AstrologyController {
   constructor(private readonly astrologyService: AstrologyService) {}
 
   @Get('my-try')
   @ApiBearerAuth()
-  @Auth(AuthType.Bearer)
-  @Roles(Role.Customer)
+  @ApiOperation({ summary: 'My Try Endpoint' })
+  @ApiResponse({ status: 200, description: 'Successful response' })
   async myTry(): Promise<string> {
     return this.astrologyService.myTry();
   }

@@ -11,6 +11,11 @@ export class UtilsService {
     return crypto.randomUUID();
   }
 
+  public isRole(value: string): value is Role {
+    const roleValues: Role[] = Object.values(Role);
+    return roleValues.includes(value as Role);
+  }
+
   /**
    * Checks if a string value is a valid member of a given enum.
    * @param enumObject

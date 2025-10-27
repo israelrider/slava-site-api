@@ -10,8 +10,15 @@ import { AUTH_TYPE_KEY } from '@/iam/decorators/auth.decorator';
 export class AuthenticationGuard implements CanActivate {
   private static readonly defaultAuthType = AuthType.Bearer;
   private readonly authTypeGuardMap: Record<AuthType, CanActivate | CanActivate[]> = {
-    [AuthType.Bearer]: [this.accessTokenGuard, this.rolesGuard],
-    [AuthType.None]: { canActivate: () => true },
+    [AuthType.Bearer]: [
+      // Currently uses AccessTokenGuard and RolesGuard for Bearer authentication.
+      this.accessTokenGuard,
+      this.rolesGuard,
+    ],
+    [AuthType.None]: {
+      // No authentication required. This is just a dummy guard that always passes.
+      canActivate: () => true,
+    },
   };
 
   constructor(
@@ -21,23 +28,32 @@ export class AuthenticationGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const authTypes: AuthType[] = this.reflector.getAllAndOverride<AuthType[]>(
+    // Retrieve the required authentication types from metadata set by the Auth decorator.
+    // For example: @Auth(AuthType.Bearer)
+    let authTypes: AuthType[] = this.reflector.getAllAndOverride<AuthType[]>(
       AUTH_TYPE_KEY,
       [
         context.getHandler(),
         context.getClass(),
-      ]
-    ) ?? [AuthenticationGuard.defaultAuthType];
-    const guards = authTypes.map((type) => this.authTypeGuardMap[type]).flat();
+      ],
+    );
+    if (!authTypes || authTypes.length === 0) {
+      // Apply the authentication requirement by default.
+      authTypes = [AuthenticationGuard.defaultAuthType];
+    }
+
+    const rawGuards: (CanActivate | CanActivate[])[] = authTypes.map((type: AuthType) => this.authTypeGuardMap[type]);
+    const guards: CanActivate[] = rawGuards.flat();
 
     for (const instance of guards) {
+      // Run each guard's canActivate method.
       const canActivate = await Promise.resolve(instance.canActivate(context));
 
-      if (canActivate) {
-        return true;
+      if (!canActivate) {
+        throw new UnauthorizedException();
       }
     }
 
-    throw new UnauthorizedException();
+    return true;
   }
 }
