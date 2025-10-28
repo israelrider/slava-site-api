@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { MailerService } from '@/common/mailer/mailer.service'
 import { Argon2Service } from '@/common/hashing/argon2.service';
 import { HashingService } from '@/common/hashing/hashing.service';
 import { UtilsService } from '@/common/utils/utils.service';
@@ -17,7 +16,6 @@ import { UsersController } from '@/users/users.controller';
   controllers: [UsersController],
   providers: [
     UtilsService,
-    MailerService,
     {
       provide: HashingService,
       useClass: Argon2Service,
@@ -27,7 +25,6 @@ import { UsersController } from '@/users/users.controller';
   ],
   exports: [
     UtilsService,
-    MailerService,
     {
       provide: HashingService,
       useClass: Argon2Service,

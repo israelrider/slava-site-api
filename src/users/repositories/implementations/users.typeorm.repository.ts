@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { Repository, InsertResult, UpdateResult } from 'typeorm';
 
 import { User } from '@/users/models/user.model';
@@ -76,6 +76,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     );
 
     if (updateResult.affected === 0) {
+      Logger.warn(`Password update failed for user with email ${email}`, 'UsersTypeOrmRepository');
       throw new NotFoundException(`User with email ${email} not found`);
     }
 
@@ -93,6 +94,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     );
 
     if (updateResult.affected === 0) {
+      Logger.warn(`User profile update failed for user ID ${id}`, 'UsersTypeOrmRepository');
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
@@ -110,6 +112,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
     );
 
     if (updateResult.affected === 0) {
+      Logger.warn(`User update failed for user ID ${id}`, 'UsersTypeOrmRepository');
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 

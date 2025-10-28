@@ -25,6 +25,7 @@ export class User {
 
   @Column({
     length: 255,
+    // Ensure password is not selected by default in queries.
     select: false,
   })
   password: string;
