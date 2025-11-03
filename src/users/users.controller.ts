@@ -6,11 +6,10 @@ import { UpdateResult } from 'typeorm';
 import { Role } from '@/iam/enums/roles.enum';
 import { Roles } from '@/iam/decorators/roles.decorator';
 import { UsersService } from '@/users/users.service';
-import { UserProfileDto } from '@/users/dto/user-profile.dto';
-import { UserUpdateDto } from '@/users/dto/user-update.dto';
-import { ChangeRoleDto } from '@/users/dto/change-role.dto';
+import { UpdateProfileDto } from '@/users/dto/update-profile.dto';
+import { UpdateRoleDto } from '@/users/dto/update-role.dto';
+import { UpdateRatingDto } from '@/users/dto/update-rating.dto';
 import { AccountUser } from '@/users/interfaces/account-user.interface';
-import { UpdateResponse } from '@/users/interfaces/update-response.interface';
 import { AllUsersResponse } from '@/users/interfaces/all-users-response.interface';
 
 @Roles(Role.Admin)
@@ -43,47 +42,36 @@ export class UsersController {
   @ApiOperation({ summary: 'Update a user profile by id' })
   @ApiResponse({ status: 200, description: 'User profile updated' })
   @ApiBadRequestResponse({ description: 'User profile not updated' })
-  public async updateUserProfile(@Param('userId') userId: string, @Body() userProfileDto: UserProfileDto): Promise<UpdateResponse> {
-    await this.usersService.updateUserProfile(+userId, userProfileDto);
-    return {
-      message: 'User Updated successfully!',
-    };
-  }
-
-  @Put('/:userId')
-  @ApiOperation({ summary: 'Update a user by id' })
-  @ApiResponse({ status: 200, description: 'User updated' })
-  @ApiBadRequestResponse({ description: 'User not updated' })
-  public async updateUser(@Param('userId') userId: string, @Body() userUpdateDto: UserUpdateDto): Promise<UpdateResponse> {
-    await this.usersService.updateUser(+userId, userUpdateDto);
-    return {
-      message: 'User Updated successfully!',
-    };
+  public async updateUserProfile(@Param('userId') userId: string, @Body() userProfileDto: UpdateProfileDto): Promise<UpdateResult> {
+    return await this.usersService.updateProfile(+userId, userProfileDto);
   }
 
   @Roles(Role.Customer)
-  @Patch()
+  @Patch('profile')
   @ApiOperation({ summary: 'Update own profile' })
   @ApiResponse({ status: 200, description: 'Own profile updated' })
   @ApiBadRequestResponse({ description: 'Own profile not updated' })
-  public async updateOwnProfile(@Req() request: FastifyRequest, @Body() userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
+  public async updateOwnProfile(@Req() request: FastifyRequest, @Body() userProfileDto: UpdateProfileDto): Promise<UpdateResult> {
     const userId: string = request.headers.id as string;
-    return await this.usersService.updateUser(+userId, userUpdateDto);
+    return await this.usersService.updateProfile(+userId, userProfileDto);
   }
 
   @Patch('/:userId/role')
   @ApiOperation({ summary: 'Request Change Role' })
   @ApiOkResponse({ description: 'User role changed successfully' })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  public async changeRole(@Param('userId') userId: string, @Body() changeRoleDto: ChangeRoleDto): Promise<UpdateResponse> {
-    const userUpdateDto: UserUpdateDto = {
-      role: changeRoleDto.role,
-    };
-    await this.usersService.updateUser(+userId, userUpdateDto);
+  public async updateRole(@Param('userId') userId: string, @Body() updateRoleDto: UpdateRoleDto): Promise<UpdateResult> {
+    return await this.usersService.updateRole(+userId, updateRoleDto);
+  }
 
-    return {
-      message: 'Request Change Role Successfully!',
-    };
+  @Roles(Role.Customer)
+  @Patch('rating')
+  @ApiOperation({ summary: 'Update site rating' })
+  @ApiResponse({ status: 200, description: 'Site rating updated' })
+  @ApiBadRequestResponse({ description: 'Site rating not updated' })
+  public async updateRating(@Req() request: FastifyRequest, @Body() updateRatingDto: UpdateRatingDto): Promise<UpdateResult> {
+    const userId: string = request.headers.id as string;
+    return await this.usersService.updateRating(+userId, updateRatingDto);
   }
 
   @Delete('/:userId')

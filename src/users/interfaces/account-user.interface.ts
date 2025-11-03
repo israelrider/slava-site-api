@@ -8,4 +8,5 @@ export interface AccountUser {
   readonly password: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  rating: number;
 }

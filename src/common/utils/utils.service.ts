@@ -48,6 +48,7 @@ export class UtilsService {
       password: user.password,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      rating: user.rating,
     };
   }
 }

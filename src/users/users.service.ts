@@ -4,11 +4,12 @@ import { InsertResult, UpdateResult } from 'typeorm';
 import { UtilsService } from '@/common/utils/utils.service';
 import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { USERS_REPOSITORY_TOKEN } from '@/users/interfaces/users.repository.interface';
-import { UserProfileDto } from '@/users/dto/user-profile.dto';
-import { UserUpdateDto } from '@/users/dto/user-update.dto';
+import { UpdateProfileDto } from '@/users/dto/update-profile.dto';
+import { RegisterUserDto } from '@/iam/dto/register-user.dto';
+import { UpdateRatingDto } from '@/users/dto/update-rating.dto';
 import { UsersTypeOrmRepository } from '@/users/repositories/implementations/users.typeorm.repository';
 import { User } from '@/users/models/user.model';
-import { UserDto } from '@/users/dto/user.dto'
+import { UpdateRoleDto } from '@/users/dto/update-role.dto'
 
 @Injectable()
 export class UsersService {
@@ -44,6 +45,7 @@ export class UsersService {
     return this.utilsService.toAccountUser(user);
   }
 
+  // The proxy method, that is called from IamService only.
   public async updatePassword(email: string, password: string): Promise<UpdateResult> {
     try {
       return await this.usersRepository.updatePassword(email, password);
@@ -53,26 +55,35 @@ export class UsersService {
     }
   }
 
-  public async updateUserProfile(id: number, userProfileDto: UserProfileDto): Promise<UpdateResult> {
+  public async updateProfile(id: number, userProfileDto: UpdateProfileDto): Promise<UpdateResult> {
     try {
-      return await this.usersRepository.updateUserProfile(id, userProfileDto);
+      return await this.usersRepository.updateUser<UpdateProfileDto>(id, userProfileDto);
     } catch (err) {
       Logger.error(`Failed to update profile for user ID ${id}`, err, 'UsersService');
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 
-  public async updateUser(id: number, userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
+  public async updateRole(id: number,updateRoleDto: UpdateRoleDto): Promise<UpdateResult> {
     try {
-      return await this.usersRepository.updateUser(id, userUpdateDto);
+      return await this.usersRepository.updateUser<UpdateRoleDto>(id, updateRoleDto);
     } catch (err) {
-      Logger.error(`Failed to update user for ID ${id}`, err, 'UsersService');
+      Logger.error(`Failed to update role for user ID ${id}`, err, 'UsersService');
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 
-  public async createUser(userDto: UserDto): Promise<InsertResult> {
-    return await this.usersRepository.create(userDto);
+  public async updateRating(id: number, updateRatingDto: UpdateRatingDto): Promise<UpdateResult> {
+    try {
+      return await this.usersRepository.updateUser<UpdateRatingDto>(id, updateRatingDto);
+    } catch (err) {
+      Logger.error(`Failed to update rating for user ID ${id}`, err, 'UsersService');
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async createUser(registerUserDto: RegisterUserDto): Promise<InsertResult> {
+    return await this.usersRepository.create(registerUserDto);
   }
 
   public async deleteUser(id: number): Promise<AccountUser> {

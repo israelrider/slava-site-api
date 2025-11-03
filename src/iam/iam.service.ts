@@ -5,7 +5,6 @@ import { InsertResult, UpdateResult } from 'typeorm';
 import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UsersService } from '@/users/users.service';
 import { User } from '@/users/models/user.model';
-import { UserDto } from '@/users/dto/user.dto';
 import { HashingService } from '@/common/hashing/hashing.service';
 import { MailerService } from '@/common/mailer/mailer.service';
 import { UtilsService } from '@/common/utils/utils.service';
@@ -13,6 +12,7 @@ import { changePasswordEmail, forgotPasswordEmail, registrationEmail } from '@/c
 import { AuthResponse } from '@/iam/interfaces/auth-response.interface';
 import { JWTPayload } from '@/iam/interfaces/jwt-payload.interface';
 import { jwtConfig } from '@/iam/config/jwt.config';
+import { RegisterUserDto } from '@/iam/dto/register-user.dto';
 import { LoginDto } from '@/iam/dto/login.dto';
 import { ChangePasswordDto } from '@/iam/dto/change-password.dto';
 import { ForgotPasswordDto } from '@/iam/dto/forgot-password.dto';
@@ -28,16 +28,16 @@ export class IamService {
     private readonly utilsService: UtilsService,
   ) {}
 
-  public async register(userDto: UserDto): Promise<InsertResult> {
+  public async register(registerUserDto: RegisterUserDto): Promise<InsertResult> {
     try {
-      userDto.password = await this.hashingService.hash(userDto.password);
+      registerUserDto.password = await this.hashingService.hash(registerUserDto.password);
 
-      this.sendMailRegisterUser(userDto)
+      this.sendMailRegisterUser(registerUserDto)
         .catch((err: unknown) => Logger.error('Send mail failed but continuing registration', err));
 
-      return await this.usersService.createUser(userDto);
+      return await this.usersService.createUser(registerUserDto);
     } catch (err) {
-      Logger.error(`User registration failed for email ${userDto.email}`, err, 'IamService');
+      Logger.error(`User registration failed for email ${registerUserDto.email}`, err, 'IamService');
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
@@ -157,6 +157,7 @@ export class IamService {
         role,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
+        rating: user.rating,
       },
     };
   }
@@ -173,18 +174,18 @@ export class IamService {
     );
   }
 
-  private async sendMailRegisterUser(user: UserDto): Promise<void> {
+  private async sendMailRegisterUser(registerUserDto: RegisterUserDto): Promise<void> {
     try {
       await this.mailerService.sendMail({
-        to: user.email,
+        to: registerUserDto.email,
         from: 'from@example.com',
         subject: 'Registration successful ✔',
-        html: registrationEmail(user),
+        html: registrationEmail(registerUserDto),
       });
 
-      Logger.log(`Send email registration successfully to user email ${user.email}`, 'IamService');
+      Logger.log(`Send email registration successfully to user email ${registerUserDto.email}`, 'IamService');
     } catch (err: unknown) {
-      Logger.error(`Send Mail Failed for user email ${user.email}`, err, 'IamService');
+      Logger.error(`Send Mail Failed for user email ${registerUserDto.email}`, err, 'IamService');
     }
   }
 

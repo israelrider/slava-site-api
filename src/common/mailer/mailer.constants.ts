@@ -1,10 +1,10 @@
-import { UserDto } from '@/users/dto/user.dto';
+import { RegisterUserDto } from '@/iam/dto/register-user.dto';
 
-export const registrationEmail = (user: UserDto) => {
+export const registrationEmail = (registerUserDto: RegisterUserDto) => {
   return `<html>
             <body>
               <div>
-                <p>Hi ${user.name}!</p>
+                <p>Hi ${registerUserDto.name}!</p>
                 <p>You did it! You registered!, You're successfully registered.✔</p>
               </div>
             </body>

@@ -10,11 +10,9 @@ import { ChangePasswordDto } from '@/iam/dto/change-password.dto';
 import { ForgotPasswordDto } from '@/iam/dto/forgot-password.dto';
 import { RegisterUserDto } from '@/iam/dto/register-user.dto'
 import { AuthType } from '@/iam/enums/auth-type.enum';
-import { Role } from '@/iam/enums/roles.enum';
 import { Auth } from '@/iam/decorators/auth.decorator';
 import { IamService } from '@/iam/iam.service';
 import { setCookieOptions } from '@/iam/iam.constants';
-import { UserDto } from '@/users/dto/user.dto'
 
 @Auth(AuthType.None)
 @ApiTags('auth')
@@ -27,11 +25,7 @@ export class IamController {
   @ApiOkResponse({ description: 'Registered a new user and sent a confirmation email to the user.' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   public async register(@Body() registerUserDto: RegisterUserDto): Promise<ChangePasswordResponse> {
-    const userDto: UserDto = {
-      ...registerUserDto,
-      role: Role.Customer,
-    };
-    await this.iamService.register(userDto);
+    await this.iamService.register(registerUserDto);
 
     return {
       message: 'User registrated successfully',

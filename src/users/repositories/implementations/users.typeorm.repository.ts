@@ -2,9 +2,7 @@ import { Logger, NotFoundException } from '@nestjs/common';
 import { Repository, InsertResult, UpdateResult } from 'typeorm';
 
 import { User } from '@/users/models/user.model';
-import { UserProfileDto } from '@/users/dto/user-profile.dto';
-import { UserUpdateDto } from '@/users/dto/user-update.dto';
-import { UserDto } from '@/users/dto/user.dto';
+import { RegisterUserDto } from '@/iam/dto/register-user.dto';
 import { HashingService } from '@/common/hashing/hashing.service';
 import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UsersRepository } from '@/users/interfaces/users.repository.interface';
@@ -60,8 +58,8 @@ export class UsersTypeOrmRepository implements UsersRepository {
     });
   }
 
-  public async create(userDto: UserDto): Promise<InsertResult> {
-    return await this.usersRepository.insert(userDto);
+  public async create(registerUserDto: RegisterUserDto): Promise<InsertResult> {
+    return await this.usersRepository.insert(registerUserDto);
   }
 
   public async updatePassword(email: string, password: string): Promise<UpdateResult> {
@@ -83,31 +81,13 @@ export class UsersTypeOrmRepository implements UsersRepository {
     return updateResult;
   }
 
-  public async updateUserProfile(id: number, userProfileDto: UserProfileDto): Promise<UpdateResult> {
+  public async updateUser<T>(id: number, updateData: T): Promise<UpdateResult> {
     const updateResult: UpdateResult = await this.usersRepository.update(
       {
         id,
       },
       {
-        ...userProfileDto,
-      },
-    );
-
-    if (updateResult.affected === 0) {
-      Logger.warn(`User profile update failed for user ID ${id}`, 'UsersTypeOrmRepository');
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    return updateResult;
-  }
-
-  public async updateUser(id: number, userUpdateDto: UserUpdateDto): Promise<UpdateResult> {
-    const updateResult: UpdateResult = await this.usersRepository.update(
-      {
-        id,
-      },
-      {
-        ...userUpdateDto,
+        ...updateData,
       },
     );
 

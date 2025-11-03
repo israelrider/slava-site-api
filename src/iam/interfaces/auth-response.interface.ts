@@ -10,5 +10,6 @@ export interface AuthResponse {
     role: Role;
     createdAt: Date;
     updatedAt: Date;
+    rating: number;
   };
 }

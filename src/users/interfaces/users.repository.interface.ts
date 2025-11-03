@@ -1,9 +1,8 @@
 import { InsertResult, UpdateResult } from 'typeorm';
 
 import { AccountUser } from '@/users/interfaces/account-user.interface';
-import { UserProfileDto } from 'src/users/dto/user-profile.dto';
-import { UserUpdateDto } from 'src/users/dto/user-update.dto';
-import { UserDto } from 'src/users/dto/user.dto';
+import { UpdateProfileDto } from '@/users/dto/update-profile.dto';
+import { RegisterUserDto } from '@/iam/dto/register-user.dto';
 import { User } from '@/users/models/user.model';
 
 export interface UsersRepository {
@@ -17,13 +16,11 @@ export interface UsersRepository {
 
   findById(userId: number): Promise<User | null>;
 
-  create(userDto: UserDto): Promise<InsertResult>;
+  create(registerUserDto: RegisterUserDto): Promise<InsertResult>;
 
   updatePassword(email: string, password: string): Promise<UpdateResult>;
 
-  updateUserProfile(id: number, userProfileDto: UserProfileDto): Promise<UpdateResult>;
-
-  updateUser(id: number, userUpdateDto: UserUpdateDto): Promise<UpdateResult>;
+  updateUser<T>(id: number, userDto: T): Promise<UpdateResult>;
 
   deleteUser(user: AccountUser): Promise<User>;
 }
