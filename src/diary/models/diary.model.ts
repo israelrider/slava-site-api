@@ -25,7 +25,7 @@ export class Diary {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user: User) => user.diary)
   // This decorator is crucial for one-to-one relationships to define the owning side
   @JoinColumn()
   user: User;

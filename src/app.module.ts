@@ -12,6 +12,7 @@ import { UtilsModule } from '@/common/utils/utils.module';
 import { WeatherModule } from '@/weather/weather.module';
 import { AskFromModule } from '@/ask-from/askFrom.module';
 import { DiaryModule } from '@/diary/diary.module';
+import { FeedbackModule } from '@/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { DiaryModule } from '@/diary/diary.module';
     WeatherModule,
     AskFromModule,
     DiaryModule,
+    FeedbackModule,
   ],
   // Apply guards globally, to each incoming request.
   providers: [

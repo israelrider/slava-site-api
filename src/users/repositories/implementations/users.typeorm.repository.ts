@@ -100,6 +100,6 @@ export class UsersTypeOrmRepository implements UsersRepository {
   }
 
   public async deleteUser(user: AccountUser): Promise<User> {
-    return await this.usersRepository.remove(user);
+    return await this.usersRepository.remove(user as User);
   }
 }

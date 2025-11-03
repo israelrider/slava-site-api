@@ -10,7 +10,6 @@ import { UpdateProfileDto } from '@/users/dto/update-profile.dto';
 import { UpdateRoleDto } from '@/users/dto/update-role.dto';
 import { UpdateRatingDto } from '@/users/dto/update-rating.dto';
 import { AccountUser } from '@/users/interfaces/account-user.interface';
-import { AllUsersResponse } from '@/users/interfaces/all-users-response.interface';
 
 @Roles(Role.Admin)
 @ApiBearerAuth()
@@ -22,12 +21,8 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'All users found' })
-  public async findAllUsers(): Promise<AllUsersResponse> {
-    const users: AccountUser[] = await this.usersService.findAll();
-    return {
-      users,
-      roles: Object.values(Role),
-    };
+  public async findAllUsers(): Promise<AccountUser[]> {
+    return await this.usersService.findAll();
   }
 
   @Get('/:userId/profile')

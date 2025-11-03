@@ -54,7 +54,7 @@ export class IamService {
         throw new UnauthorizedException('Authentication failed. Wrong password');
       }
 
-      return await this.generateTokens(user);
+      return await this.generateTokens(user as User);
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
@@ -69,7 +69,7 @@ export class IamService {
     try {
       const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(refreshToken);
       const user: AccountUser = await this.usersService.findBySub(id);
-      result = await this.generateTokens(user);
+      result = await this.generateTokens(user as User);
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException(`Authentication token expired. ${error.message}`);

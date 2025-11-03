@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
 
 import { Role } from '@/iam/enums/roles.enum';
+import { Diary } from '@/diary/models/diary.model';
+import { Feedback } from '@/feedback/models/feedback.model';
 
 @Entity('users') // Table name will be "users"
 export class User {
@@ -48,12 +50,15 @@ export class User {
   })
   rating: number;
 
-  // TODO: Uncomment cascade relation when Diary module is ready.
-  /*
   @OneToOne(() => Diary, (diary: Diary) => diary.user, {
     // Ensures TypeORM saves/updates related entity.
     cascade: ['remove'],
   })
   diary: Diary;
-  */
+
+  @OneToOne(() => Feedback, (feedback: Feedback) => feedback.user, {
+    // Ensures TypeORM saves/updates related entity.
+    cascade: ['remove'],
+  })
+  feedback: Feedback;
 }
