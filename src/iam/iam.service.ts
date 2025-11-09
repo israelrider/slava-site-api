@@ -1,6 +1,6 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
-import { InsertResult, UpdateResult } from 'typeorm';
+import { UpdateResult } from 'typeorm';
 
 import { AccountUser } from '@/users/interfaces/account-user.interface';
 import { UsersService } from '@/users/users.service';
@@ -28,36 +28,63 @@ export class IamService {
     private readonly utilsService: UtilsService,
   ) {}
 
-  public async register(registerUserDto: RegisterUserDto): Promise<InsertResult> {
-    try {
-      registerUserDto.password = await this.hashingService.hash(registerUserDto.password);
-
-      this.sendMailRegisterUser(registerUserDto)
-        .catch((err: unknown) => Logger.error('Send mail failed but continuing registration', err));
-
-      return await this.usersService.createUser(registerUserDto);
-    } catch (err) {
-      Logger.error(`User registration failed for email ${registerUserDto.email}`, err, 'IamService');
-      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+  public async register(registerUserDto: RegisterUserDto): Promise<void> {
+    const user: AccountUser | null = await this.usersService.byEmailWithPassword(registerUserDto.email);
+    if (user && user.isEmailConfirmed) {
+      Logger.error(`User registration failed: Email ${registerUserDto.email} already in use`, '', 'IamService');
+      throw new BadRequestException('Email is already in use.');
     }
+
+    registerUserDto.password = await this.hashingService.hash(registerUserDto.password);
+    await this.usersService.createUser(registerUserDto, user);
+
+    const url: string = this.prepareVerificationLink(registerUserDto.email);
+    await this.sendMailRegisterUser(registerUserDto, url);
+  }
+
+  public async confirmEmail(token: string) {
+    if (!token) {
+      Logger.error('Email confirmation failed: Missing token', '', 'IamService');
+      throw new BadRequestException('Verification token is missing.');
+    }
+
+    const payload: JWTPayload = await this.jwtService.verifyAsync<JWTPayload>(token, {
+      secret: process.env.JWT_EMAIL_VERIFICATION,
+    });
+
+    const { email } = payload;
+    const user: AccountUser | null = await this.usersService.byEmailWithPassword(email);
+    if (!user) {
+      Logger.error(`Email confirmation failed: User with email ${email} not found`, '', 'IamService');
+      throw new BadRequestException('User not found.');
+    }
+
+    if (user?.isEmailConfirmed) {
+      Logger.error(`Email confirmation failed: Email ${email} already confirmed`, '', 'IamService');
+      throw new BadRequestException('Email already confirmed.');
+    }
+
+    // Update the user status in the database using TypeORM repository.
+    await this.usersService.markEmailAsConfirmed(user.id);
   }
 
   public async login(loginDto: LoginDto): Promise<AuthResponse> {
-    try {
-      const user: AccountUser = await this.usersService.byEmailWithPassword(loginDto.email);
-      if (!user) {
-        throw new UnauthorizedException('User does not exists');
-      }
-
-      const passwordIsValid: boolean = await this.hashingService.compare(loginDto.password, user.password);
-      if (!passwordIsValid) {
-        throw new UnauthorizedException('Authentication failed. Wrong password');
-      }
-
-      return await this.generateTokens(user as User);
-    } catch (err) {
-      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    const user: AccountUser | null = await this.usersService.byEmailWithPassword(loginDto.email);
+    if (!user) {
+      throw new UnauthorizedException('User does not exists');
     }
+
+    if (!user.isEmailConfirmed) {
+      Logger.error(`Email confirmation failed: Email ${user.email} not confirmed`, '', 'IamService');
+      throw new BadRequestException('Email not confirmed.');
+    }
+
+    const passwordIsValid: boolean = await this.hashingService.compare(loginDto.password, user.password);
+    if (!passwordIsValid) {
+      throw new UnauthorizedException('Authentication failed. Wrong password');
+    }
+
+    return await this.generateTokens(user as User);
   }
 
   public async refreshTokens(refreshToken: string | null): Promise<AuthResponse> {
@@ -68,7 +95,13 @@ export class IamService {
     let result: AuthResponse = null;
     try {
       const { id } = await this.jwtService.verifyAsync<Pick<JWTPayload, 'id'>>(refreshToken);
-      const user: AccountUser = await this.usersService.findBySub(id);
+
+      const user: AccountUser = await this.usersService.findById(id);
+      if (!user.isEmailConfirmed) {
+        Logger.error(`Email confirmation failed: Email ${user.email} not confirmed`, '', 'IamService');
+        throw new BadRequestException('Email not confirmed.');
+      }
+
       result = await this.generateTokens(user as User);
     } catch (error) {
       if (error instanceof TokenExpiredError) {
@@ -76,7 +109,7 @@ export class IamService {
       }
 
       Logger.error('Error during token refresh', error);
-      throw new UnauthorizedException('Error during token refresh');
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
     if (!result || !result.refreshToken || !result.accessToken) {
@@ -87,26 +120,22 @@ export class IamService {
   }
 
   public async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<UpdateResult> {
-    try {
-      const password: string = this.utilsService.generatePassword();
-      const loginDto: LoginDto = {
-        email: forgotPasswordDto.email,
-        password,
-      };
+    const password: string = this.utilsService.generatePassword();
+    const loginDto: LoginDto = {
+      email: forgotPasswordDto.email,
+      password,
+    };
 
-      this.sendMailForgotPassword(loginDto).catch(
-        (err: unknown) => Logger.error('Forgot Password: Send Mail Failed', err),
-      );
+    this.sendMailForgotPassword(loginDto).catch(
+      (error: unknown) => Logger.error('Forgot Password: Send Mail Failed', error),
+    );
 
-      return await this.usersService.updatePassword(forgotPasswordDto.email, password);
-    } catch (err) {
-      Logger.error(`Creating new password failed for email ${forgotPasswordDto.email}`, err, 'IamService');
-      throw new BadRequestException(err, 'Creating new password failed!');
-    }
+    return await this.usersService.updatePassword(forgotPasswordDto.email, password);
   }
 
   public async changePassword(id: number, changePasswordDto: ChangePasswordDto): Promise<UpdateResult> {
     let user: AccountUser = await this.usersService.findById(id);
+    // We need repeat the fetch, because the password is not included in the first fetch.
     user = await this.usersService.byEmailWithPassword(user.email);
     if (!user) {
       throw new UnauthorizedException('User does not exists');
@@ -174,13 +203,31 @@ export class IamService {
     );
   }
 
-  private async sendMailRegisterUser(registerUserDto: RegisterUserDto): Promise<void> {
+  private prepareVerificationLink(email: string): string {
+    const token: string = this.jwtService.sign(
+      // payload
+      {
+        email,
+      },
+      // options
+      {
+        // Use a dedicated secret.
+        secret: process.env.JWT_EMAIL_VERIFICATION,
+        // Token expires in 1 hour.
+        expiresIn: '1h',
+      },
+    );
+
+    return `${process.env.ENDPOINT_URL_CORS}/login?token=${token}`;
+  }
+
+  private async sendMailRegisterUser(registerUserDto: RegisterUserDto, url: string): Promise<void> {
     try {
       await this.mailerService.sendMail({
         to: registerUserDto.email,
-        from: 'from@example.com',
-        subject: 'Registration successful ✔',
-        html: registrationEmail(registerUserDto),
+        from: process.env.EMAIL_AUTH_USER,
+        subject: 'Verify your email',
+        html: registrationEmail(registerUserDto.name, url),
       });
 
       Logger.log(`Send email registration successfully to user email ${registerUserDto.email}`, 'IamService');
@@ -193,7 +240,7 @@ export class IamService {
     try {
       await this.mailerService.sendMail({
         to: loginDto.email,
-        from: 'from@example.com',
+        from: process.env.EMAIL_AUTH_USER,
         subject: 'Your new password ✔',
         text: `Here is your new password: ${loginDto.password}`,
         html: forgotPasswordEmail(loginDto.password),
@@ -208,7 +255,7 @@ export class IamService {
     try {
       await this.mailerService.sendMail({
         to: loginDto.email,
-        from: 'from@example.com',
+        from: process.env.EMAIL_AUTH_USER,
         subject: 'Password Changed successfully ✔',
         text: `Here is your new password: ${loginDto.password}`,
         html: changePasswordEmail(loginDto.password),

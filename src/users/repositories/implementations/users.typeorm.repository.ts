@@ -17,35 +17,11 @@ export class UsersTypeOrmRepository implements UsersRepository {
     return await this.usersRepository.find();
   }
 
-  public async findByEmail(email: string): Promise<User | null> {
-    if (!email || email.length === 0) {
-      throw new NotFoundException('Email Not Found');
-    }
-
-    return await this.usersRepository.findOneBy({
-      email: email,
-    });
-  }
-
   public async byEmailWithPassword(email: string): Promise<User | null> {
-    if (!email || email.length === 0) {
-      throw new NotFoundException('Email Not Found');
-    }
-
     return await this.usersRepository.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.email = :email', { email })
       .getOne();
-  }
-
-  public async findBySub(sub: number): Promise<User> {
-    if (!sub) {
-      throw new NotFoundException('Sub Not Found');
-    }
-
-    return await this.usersRepository.findOneByOrFail({
-      id: sub,
-    });
   }
 
   public async findById(userId: number): Promise<User | null> {
@@ -82,14 +58,7 @@ export class UsersTypeOrmRepository implements UsersRepository {
   }
 
   public async updateUser<T>(id: number, updateData: T): Promise<UpdateResult> {
-    const updateResult: UpdateResult = await this.usersRepository.update(
-      {
-        id,
-      },
-      {
-        ...updateData,
-      },
-    );
+    const updateResult: UpdateResult = await this.usersRepository.update(id, updateData);
 
     if (updateResult.affected === 0) {
       Logger.warn(`User update failed for user ID ${id}`, 'UsersTypeOrmRepository');

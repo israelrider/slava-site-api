@@ -24,7 +24,9 @@ export class Feedback {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user: User) => user.feedback)
+  // Ensures TypeORM saves/updates related entity.
+  @ManyToOne(() => User, (user: User) => user.feedback, { onDelete: 'CASCADE' })
+  // This decorator is crucial for many-to-one relationships to define the owning side.
   @JoinColumn({ name: 'userId' })
   user: User;
 }

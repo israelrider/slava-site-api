@@ -25,8 +25,9 @@ export class Diary {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => User, (user: User) => user.diary)
-  // This decorator is crucial for one-to-one relationships to define the owning side
+  // Ensures TypeORM saves/updates related entity.
+  @OneToOne(() => User, (user: User) => user.diary, { onDelete: 'CASCADE' })
+  // This decorator is crucial for one-to-one relationships to define the owning side.
   @JoinColumn()
   user: User;
 }

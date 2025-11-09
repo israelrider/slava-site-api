@@ -1,7 +1,6 @@
 import { Controller, Put, Get, Body, Param, Delete, Patch, Req } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FastifyRequest } from 'fastify';
-import { UpdateResult } from 'typeorm';
 
 import { Role } from '@/iam/enums/roles.enum';
 import { Roles } from '@/iam/decorators/roles.decorator';
@@ -37,8 +36,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Update a user profile by id' })
   @ApiResponse({ status: 200, description: 'User profile updated' })
   @ApiBadRequestResponse({ description: 'User profile not updated' })
-  public async updateUserProfile(@Param('userId') userId: string, @Body() userProfileDto: UpdateProfileDto): Promise<UpdateResult> {
-    return await this.usersService.updateProfile(+userId, userProfileDto);
+  public async updateUserProfile(@Param('userId') userId: string, @Body() userProfileDto: UpdateProfileDto): Promise<void> {
+    await this.usersService.updateProfile(+userId, userProfileDto);
   }
 
   @Roles(Role.Customer)
@@ -46,17 +45,17 @@ export class UsersController {
   @ApiOperation({ summary: 'Update own profile' })
   @ApiResponse({ status: 200, description: 'Own profile updated' })
   @ApiBadRequestResponse({ description: 'Own profile not updated' })
-  public async updateOwnProfile(@Req() request: FastifyRequest, @Body() userProfileDto: UpdateProfileDto): Promise<UpdateResult> {
+  public async updateOwnProfile(@Req() request: FastifyRequest, @Body() userProfileDto: UpdateProfileDto): Promise<void> {
     const userId: string = request.headers.id as string;
-    return await this.usersService.updateProfile(+userId, userProfileDto);
+    await this.usersService.updateProfile(+userId, userProfileDto);
   }
 
   @Patch('/:userId/role')
   @ApiOperation({ summary: 'Request Change Role' })
   @ApiOkResponse({ description: 'User role changed successfully' })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  public async updateRole(@Param('userId') userId: string, @Body() updateRoleDto: UpdateRoleDto): Promise<UpdateResult> {
-    return await this.usersService.updateRole(+userId, updateRoleDto);
+  public async updateRole(@Param('userId') userId: string, @Body() updateRoleDto: UpdateRoleDto): Promise<void> {
+    await this.usersService.updateRole(+userId, updateRoleDto);
   }
 
   @Roles(Role.Customer)
@@ -64,16 +63,16 @@ export class UsersController {
   @ApiOperation({ summary: 'Update site rating' })
   @ApiResponse({ status: 200, description: 'Site rating updated' })
   @ApiBadRequestResponse({ description: 'Site rating not updated' })
-  public async updateRating(@Req() request: FastifyRequest, @Body() updateRatingDto: UpdateRatingDto): Promise<UpdateResult> {
+  public async updateRating(@Req() request: FastifyRequest, @Body() updateRatingDto: UpdateRatingDto): Promise<void> {
     const userId: string = request.headers.id as string;
-    return await this.usersService.updateRating(+userId, updateRatingDto);
+    await this.usersService.updateRating(+userId, updateRatingDto);
   }
 
   @Delete('/:userId')
   @ApiOperation({ summary: 'Delete a user by id' })
   @ApiResponse({ status: 200, description: 'User deleted' })
   @ApiNoContentResponse({ description: 'User not deleted' })
-  public async deleteUser(@Param('userId') userId: string): Promise<AccountUser> {
-    return await this.usersService.deleteUser(+userId);
+  public async deleteUser(@Param('userId') userId: string): Promise<void> {
+    await this.usersService.deleteUser(+userId);
   }
 }

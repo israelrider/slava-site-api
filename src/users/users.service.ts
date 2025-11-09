@@ -24,13 +24,8 @@ export class UsersService {
     return users.map((user: User) => this.utilsService.toAccountUser(user));
   }
 
-  public async byEmailWithPassword(email: string): Promise<AccountUser> {
+  public async byEmailWithPassword(email: string): Promise<AccountUser | null> {
     const user: User | null = await this.usersRepository.byEmailWithPassword(email);
-    return this.utilsService.toAccountUser(user);
-  }
-
-  public async findBySub(sub: number): Promise<AccountUser> {
-    const user: User = await this.usersRepository.findBySub(sub);
     return this.utilsService.toAccountUser(user);
   }
 
@@ -64,7 +59,7 @@ export class UsersService {
     }
   }
 
-  public async updateRole(id: number,updateRoleDto: UpdateRoleDto): Promise<UpdateResult> {
+  public async updateRole(id: number, updateRoleDto: UpdateRoleDto): Promise<UpdateResult> {
     try {
       return await this.usersRepository.updateUser<UpdateRoleDto>(id, updateRoleDto);
     } catch (err) {
@@ -82,8 +77,17 @@ export class UsersService {
     }
   }
 
-  public async createUser(registerUserDto: RegisterUserDto): Promise<InsertResult> {
-    return await this.usersRepository.create(registerUserDto);
+  async markEmailAsConfirmed(id: number): Promise<UpdateResult> {
+    return this.usersRepository.updateUser(id, { isEmailConfirmed: true });
+  }
+
+  public async createUser(registerUserDto: RegisterUserDto, user: AccountUser): Promise<void> {
+    if (user) {
+      await this.usersRepository.updateUser<UpdateProfileDto>(user.id, registerUserDto);
+      return;
+    }
+
+    await this.usersRepository.create(registerUserDto);
   }
 
   public async deleteUser(id: number): Promise<AccountUser> {

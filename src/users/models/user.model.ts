@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany } from 'typeorm';
 
 import { Role } from '@/iam/enums/roles.enum';
 import { Diary } from '@/diary/models/diary.model';
@@ -21,6 +21,21 @@ export class User {
     length: 255,
   })
   email: string;
+
+  @Column({
+    type: "tinyint",
+    width: 1,
+    unsigned: true,
+    default: 0,
+  })
+  isEmailConfirmed: boolean;
+
+  /*
+  @Column({
+    nullable: true,
+  })
+  verificationToken: string;
+  */
 
   @Column({
     length: 20,
@@ -50,15 +65,9 @@ export class User {
   })
   rating: number;
 
-  @OneToOne(() => Diary, (diary: Diary) => diary.user, {
-    // Ensures TypeORM saves/updates related entity.
-    cascade: ['remove'],
-  })
+  @OneToOne(() => Diary, (diary: Diary) => diary.user)
   diary: Diary;
 
-  @OneToOne(() => Feedback, (feedback: Feedback) => feedback.user, {
-    // Ensures TypeORM saves/updates related entity.
-    cascade: ['remove'],
-  })
+  @OneToMany(() => Feedback, (feedback: Feedback) => feedback.user)
   feedback: Feedback;
 }

@@ -44,6 +44,7 @@ export class UtilsService {
       id: user.id,
       name: user.name,
       email: user.email,
+      isEmailConfirmed: user.isEmailConfirmed,
       role,
       password: user.password,
       createdAt: user.createdAt,

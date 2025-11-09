@@ -1,18 +1,13 @@
 import { InsertResult, UpdateResult } from 'typeorm';
 
 import { AccountUser } from '@/users/interfaces/account-user.interface';
-import { UpdateProfileDto } from '@/users/dto/update-profile.dto';
 import { RegisterUserDto } from '@/iam/dto/register-user.dto';
 import { User } from '@/users/models/user.model';
 
 export interface UsersRepository {
   findAll(): Promise<User[]>;
 
-  findByEmail(email: string): Promise<User | null>;
-
   byEmailWithPassword(email: string): Promise<User | null>;
-
-  findBySub(sub: number): Promise<User>;
 
   findById(userId: number): Promise<User | null>;
 

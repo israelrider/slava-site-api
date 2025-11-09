@@ -4,6 +4,7 @@ export interface AccountUser {
   readonly id: number;
   readonly name: string;
   readonly email: string;
+  readonly isEmailConfirmed: boolean;
   readonly role: Role;
   readonly password: string | null;
   readonly createdAt: Date;

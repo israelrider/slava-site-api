@@ -18,7 +18,7 @@ export class AccessTokenGuard implements CanActivate {
     }
 
     try {
-      const payload: JWTPayload = await this.jwtService.verifyAsync(token);
+      const payload: JWTPayload = await this.jwtService.verifyAsync<JWTPayload>(token);
       // Pass user role and id to request headers for further use.
       request.headers.role = payload?.role;
       request.headers.id = payload?.id.toString();
