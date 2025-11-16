@@ -1,4 +1,4 @@
-import { Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { Repository, InsertResult, UpdateResult } from 'typeorm';
 
 import { User } from '@/users/models/user.model';
@@ -69,6 +69,11 @@ export class UsersTypeOrmRepository implements UsersRepository {
   }
 
   public async deleteUser(user: AccountUser): Promise<User> {
+    if (user.id === +process.env.SUPER_ADMIN_ID) {
+      Logger.warn('Attempt to delete super admin user', 'UsersTypeOrmRepository');
+      throw new BadRequestException('Cannot delete super admin user');
+    }
+
     return await this.usersRepository.remove(user as User);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Put, Get, Body, Param, Delete, Patch, Req } from '@nestjs/common';
+import { Controller, Put, Get, Body, Param, Delete, Patch, Req, BadRequestException, Logger } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FastifyRequest } from 'fastify';
 
@@ -55,6 +55,11 @@ export class UsersController {
   @ApiOkResponse({ description: 'User role changed successfully' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   public async updateRole(@Param('userId') userId: string, @Body() updateRoleDto: UpdateRoleDto): Promise<void> {
+    if (+userId === +process.env.SUPER_ADMIN_ID) {
+      Logger.warn('Attempt to change role of Super Admin', 'UsersController');
+      throw new BadRequestException('Cannot change role of Super Admin.');
+    }
+
     await this.usersService.updateRole(+userId, updateRoleDto);
   }
 

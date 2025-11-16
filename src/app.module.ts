@@ -13,6 +13,7 @@ import { WeatherModule } from '@/weather/weather.module';
 import { AskFromModule } from '@/ask-from/askFrom.module';
 import { DiaryModule } from '@/diary/diary.module';
 import { FeedbackModule } from '@/feedback/feedback.module';
+import { FilesModule } from "@/files/files.module";
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { FeedbackModule } from '@/feedback/feedback.module';
     AskFromModule,
     DiaryModule,
     FeedbackModule,
+    FilesModule,
   ],
   // Apply guards globally, to each incoming request.
   providers: [

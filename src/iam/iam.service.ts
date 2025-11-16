@@ -75,8 +75,8 @@ export class IamService {
     }
 
     if (!user.isEmailConfirmed) {
-      Logger.error(`Email confirmation failed: Email ${user.email} not confirmed`, '', 'IamService');
-      throw new BadRequestException('Email not confirmed.');
+      Logger.error(`1 Email confirmation failed: Email ${user.email} not confirmed`, '', 'IamService');
+      throw new BadRequestException(`Email ${user.email} not confirmed. Please repeat the registration process.`);
     }
 
     const passwordIsValid: boolean = await this.hashingService.compare(loginDto.password, user.password);
@@ -98,8 +98,8 @@ export class IamService {
 
       const user: AccountUser = await this.usersService.findById(id);
       if (!user.isEmailConfirmed) {
-        Logger.error(`Email confirmation failed: Email ${user.email} not confirmed`, '', 'IamService');
-        throw new BadRequestException('Email not confirmed.');
+        Logger.error(`2 Email confirmation failed: Email ${user.email} not confirmed`, '', 'IamService');
+        throw new BadRequestException(`Email ${user.email} not confirmed. Please repeat the registration process.`);
       }
 
       result = await this.generateTokens(user as User);
@@ -120,7 +120,7 @@ export class IamService {
   }
 
   public async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<UpdateResult> {
-    const password: string = this.utilsService.generatePassword();
+    const password: string = this.utilsService.generateRandomPassword(36);
     const loginDto: LoginDto = {
       email: forgotPasswordDto.email,
       password,
