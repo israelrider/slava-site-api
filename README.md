@@ -2,9 +2,9 @@
 
 `cp .env.example .env`
 
-### Config settings .env for sending a notification when a user registers, forgets password or changes password
+`docker build -t backend .`
 
-https://chatgpt.com/share/68b6e38c-bf9c-8008-a1df-75caf3f07a39
+### Config settings .env
 
 `
    EMAIL_HOST=smtp.mailtrap.io

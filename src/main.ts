@@ -18,7 +18,6 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, fastifyAdapter, {
     logger: new ConsoleLogger({
       json: true,
-      colors: true,
     }),
   });
 
@@ -41,7 +40,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.SERVER_PORT || 3000;
+  const port = process.env.SERVER_PORT;
   await app.listen(port, '0.0.0.0');
   if (process.env.NODE_ENV !== 'production') {
     Logger.debug(`${await app.getUrl()} - Environment: ${process.env.NODE_ENV}`, 'Environment');

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
 
 import { FEEDBACK_REPOSITORY_TOKEN } from '@/feedback/interfaces/feedback.repository.interface';
@@ -18,6 +18,7 @@ export class FeedbackService {
   }
 
   public async addFeedback(userId: number, feedbackDto: FeedbackDto): Promise<UpdateResult> {
+    Logger.log(`New Feedback: ${feedbackDto.comment} from user with ID ${userId}`, 'FeedbackService');
     return await this.feedbackRepository.create(userId, feedbackDto);
   }
 }

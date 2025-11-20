@@ -25,7 +25,10 @@ import { FilesModule } from "@/files/files.module";
         username: process.env.TYPEORM_USERNAME,
         password: process.env.TYPEORM_PASSWORD,
         database: process.env.TYPEORM_DATABASE,
-        synchronize: true,
+        // https://docs.nestjs.com/techniques/database
+        // If true, automatically loaded models will be synchronized (default: true).
+        // Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
+        synchronize: false,
         entities: [__dirname + '/**/*.{model,entity}.{ts,js}'],
         migrations: ['dist/migrations/**/*.js'],
         subscribers: ['dist/subscriber/**/*.js'],

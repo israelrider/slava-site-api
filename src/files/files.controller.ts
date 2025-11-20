@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, NotFoundException, Res } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FastifyReply } from 'fastify';
 import * as fs from 'node:fs';
@@ -15,7 +15,7 @@ export class FilesController {
   @Get('stream')
   async streamFile(@Res({ passthrough: true }) reply: FastifyReply): Promise<void> {
     const filename = 'Resume.pdf';
-    const filePath = join(process.cwd(), 'src/files', filename);
+    const filePath = join(__dirname, '..', 'assets', filename);
     const stream = createReadStream(filePath);
     reply.header('Content-Type', 'application/pdf');
     reply.header('Content-Disposition', `attachment; filename="${filename}"`);

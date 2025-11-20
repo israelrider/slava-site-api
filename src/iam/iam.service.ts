@@ -172,8 +172,8 @@ export class IamService {
     }
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl ?? 3600, { role }),
-      this.signToken(user.id, jwtConfig.refreshTokenTtl ?? 86400),
+      this.signToken<Partial<JWTPayload>>(user.id, jwtConfig.accessTokenTtl, { role }),
+      this.signToken(user.id, jwtConfig.refreshTokenTtl),
     ]);
 
     return {
