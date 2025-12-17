@@ -15,7 +15,7 @@ export class AskFromController {
   @ApiOperation({ summary: 'Check character relevance' })
   @ApiResponse({ status: 200, description: 'Character relevance result' })
   async characterRelevance(@Body() characterDto: CharacterDto): Promise<string> {
-    return this.askFromService.checkCharacterRelevance(characterDto.character.trim());
+    return this.askFromService.checkCharacterRelevance(characterDto);
   }
 
   @Post('question-to-character')

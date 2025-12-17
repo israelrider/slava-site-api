@@ -4,6 +4,12 @@ export class QuestionDto  {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
+  @MaxLength(2)
+  readonly language: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(2)
   @MaxLength(25)
   readonly character: string;
 

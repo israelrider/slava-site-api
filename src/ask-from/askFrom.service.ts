@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { QuestionDto } from '@/ask-from/dto/question.dto'
+import { CharacterDto } from '@/ask-from/dto/character.dto'
 
 @Injectable()
 export class AskFromService {
-  public async checkCharacterRelevance(character: string): Promise<string> {
+  public async checkCharacterRelevance(characterDto: CharacterDto): Promise<string> {
     // The client gets the API key from the environment variable `GEMINI_API_KEY`.
     const ai = new GoogleGenAI({});
 
-    return await this.action(ai, character);
+    return await this.action(ai, characterDto.language, characterDto.character.trim());
   }
 
-  private async action(ai: GoogleGenAI, character: string): Promise<string> {
+  private async action(ai: GoogleGenAI, language: string, character: string): Promise<string> {
     const contents: string = `I define four criteria for evaluating a character:
 First. He is a physical character.
 Second. He is a sentient individual.
@@ -21,6 +22,7 @@ Question:
 Does the ${character} meet all four criteria?
 Please provide for the answer in a positive case only word "yes".
 Otherwise please describe your decision.
+Please answer in ${language} language.
 `;
 
     const response: GenerateContentResponse = await ai.models.generateContent({
@@ -42,12 +44,13 @@ Otherwise please describe your decision.
     // The client gets the API key from the environment variable `GEMINI_API_KEY`.
     const ai = new GoogleGenAI({});
 
+    const language = questionDto.language;
     const character = questionDto.character.trim();
     const question = questionDto.question.trim();
-    return await this.actionQuestion(ai, character, question);
+    return await this.actionQuestion(ai, language, character, question);
   }
 
-  private async actionQuestion(ai: GoogleGenAI, character: string, question: string): Promise<string> {
+  private async actionQuestion(ai: GoogleGenAI, language: string, character: string, question: string): Promise<string> {
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       config: {
@@ -55,7 +58,7 @@ Otherwise please describe your decision.
           // Disables thinking.
           thinkingBudget: 0,
         },
-        systemInstruction: `You are a character ${character}. Answer the question as if you are this character.`,
+        systemInstruction: `You are a character ${character}. Answer the question as if you are this character. Please answer in ${language} language.`,
       },
       contents: `Question: ${question}`,
     });
