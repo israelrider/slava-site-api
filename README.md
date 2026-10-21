@@ -1,3 +1,73 @@
+# slava-site-api — backend of slava-kvet.com
+
+The REST API behind my personal portfolio site (Sep – Dec 2025), built with **NestJS on Fastify**,
+TypeORM and MySQL. Interactive API documentation is generated with Swagger.
+
+![Swagger API documentation](docs/swagger.png)
+
+## What it does
+
+- **Authentication & authorization** (`src/iam`) — register, email confirmation, login, logout,
+  forgot/change password; JWT access token + **refresh token in an HttpOnly cookie**;
+  passwords hashed with **argon2**; role-based guards (admin / customer).
+- **Users** — list, profile, change role, site rating, delete (admin only; user #1 is protected).
+- **Diary**, **Feedback** — per-user data stored as MySQL / JSON.
+- **Weather** — table and chart data from the Open-Meteo API.
+- **Ask from…** — AI feature using the **Google Gemini API**.
+- **Download** — file streaming endpoint.
+- **Security & robustness** — Helmet, CORS, rate limiting, under-pressure health protection,
+  request validation with class-validator.
+- **Mail** — nodemailer (confirmation and password-reset emails).
+- **Tests** — 14 unit spec files and 6 e2e suites (Jest + Supertest): register, login, users,
+  forgot/change password.
+
+## Tech stack
+
+Node.js · NestJS · Fastify · TypeScript · TypeORM · MySQL 8 · JWT · argon2 · Swagger (OpenAPI 3) ·
+nodemailer · Google Gemini · Jest · Docker
+
+## Architecture
+
+```mermaid
+flowchart LR
+    B[Browser] -->|HTTPS 443| N[nginx reverse proxy<br/>Let's Encrypt SSL]
+    N -->|/ | W[slava-site-web<br/>React + Vite build, nginx :3000]
+    N -->|/api| A[slava-site-api<br/>NestJS + Fastify :3333]
+    A --> D[(MySQL 8)]
+    A -.-> G[Google Gemini API]
+    A -.-> O[Open-Meteo API]
+    R[Private Docker registry] -.->|docker pull| W
+    R -.->|docker pull| A
+```
+
+## Run locally
+
+```bash
+# MySQL (from slava-site-infra: schema + demo data)
+docker run -d --name slava-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root \
+  -v "$(pwd)/../slava-site-infra/mysql/migration:/docker-entrypoint-initdb.d" mysql:8
+
+pnpm install
+cp .env.example .env      # NODE_ENV=development, DB settings, SWAGGER_USER / SWAGGER_PASSWORD
+pnpm run start:dev        # API on http://localhost:3333, Swagger on http://localhost:3333/docs
+pnpm test                 # unit tests
+pnpm run test:e2e         # end-to-end tests
+```
+
+Gemini and email are optional for a local run; those endpoints just won't work without keys.
+
+## Related repositories
+
+| Repo | What it is |
+|---|---|
+| [slava-site-web](https://github.com/israelrider/slava-site-web) | Frontend: React + TypeScript |
+| [slava-site-api](https://github.com/israelrider/slava-site-api) | Backend: NestJS REST API |
+| [slava-site-infra](https://github.com/israelrider/slava-site-infra) | Infrastructure: Docker Compose, nginx, registry, MySQL |
+
+---
+
+## Developer notes (original)
+
 `pnpm install`
 
 `cp .env.example .env`
