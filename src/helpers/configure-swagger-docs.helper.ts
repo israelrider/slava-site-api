@@ -4,8 +4,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 export function configureSwaggerDocs(app: INestApplication) {
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('API')
-      .setDescription('The API description')
+      .setTitle('slava-kvet.com API')
+      .setDescription(
+        'NestJS + Fastify REST API: JWT auth with refresh cookie, roles, users, diary, feedback, weather, Gemini AI',
+      )
       .setVersion('1.0')
       .addServer('http://localhost:3000', 'Local server')
       .addTag('auth', 'API by authentication')
